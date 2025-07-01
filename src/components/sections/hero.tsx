@@ -15,7 +15,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollToSection }) => {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-background"></div>
         <Image 
-          src="https://placehold.co/1920x1080/0d0d0d/FFFFFF.png" 
+          src="https://placehold.co/1920x1080/0d0d0d/0d0d0d.png" 
           alt="Night Skyline" 
           data-ai-hint="night skyline"
           layout="fill" 
