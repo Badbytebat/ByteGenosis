@@ -5,7 +5,6 @@ import React, { createContext, useState, useEffect, useContext, ReactNode } from
 import {
   User,
   onAuthStateChanged,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut
 } from 'firebase/auth';
@@ -15,7 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -36,29 +34,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
   
-  const signUp = async (email: string, password: string) => {
-    setLoading(true);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      toast({ title: "Account Created", description: "You have been successfully signed up." });
-    } catch (error: any) {
-      console.error("Sign up error", error);
-      let description = "An unknown error occurred.";
-      if (error.code === 'auth/email-already-in-use') {
-          description = 'This email is already in use. Please sign in instead.';
-      } else if (error.code === 'auth/weak-password') {
-          description = 'The password is too weak. Please choose a stronger password.';
-      } else if (error.code === 'auth/invalid-email') {
-          description = 'The email address is not valid.';
-      } else if (error.code === 'auth/operation-not-allowed') {
-         description = 'Email/Password sign up is not enabled in your Firebase project.';
-      }
-      toast({ title: 'Sign Up Failed', description, variant: 'destructive' });
-    } finally {
-        setLoading(false);
-    }
-  };
-
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
@@ -89,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const value = { user, loading, signUp, signIn, signOut };
+  const value = { user, loading, signIn, signOut };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

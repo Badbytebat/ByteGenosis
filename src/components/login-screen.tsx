@@ -5,7 +5,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Mail, Lock, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 
@@ -15,7 +14,6 @@ type LoginScreenProps = {
   password: string;
   setPassword: (password: string) => void;
   handleSignIn: (e: React.FormEvent) => Promise<void>;
-  handleSignUp: (e: React.FormEvent) => Promise<void>;
   handleViewerMode: () => void;
   shatterActive: boolean;
   batAnimation: boolean;
@@ -25,7 +23,7 @@ type LoginScreenProps = {
 const LoginScreen: React.FC<LoginScreenProps> = ({
   email, setEmail,
   password, setPassword,
-  handleSignIn, handleSignUp,
+  handleSignIn,
   handleViewerMode, shatterActive, batAnimation,
   isFirebaseConfigured
 }) => {
@@ -39,7 +37,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             🦇 Welcome to the Batcave
           </CardTitle>
           <CardDescription>
-            Authenticate to enter edit mode or proceed as a viewer.
+            Please sign in to access edit mode.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -55,58 +53,27 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             </div>
           )}
           
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4 pt-4">
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                      type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email" required autoComplete="email"
-                      className="pl-10" disabled={!isFirebaseConfigured}
-                  />
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                      type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Password" required autoComplete="current-password"
-                      className="pl-10" disabled={!isFirebaseConfigured}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={!isFirebaseConfigured}>
-                  Sign In
-                </Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="signup">
-                <form onSubmit={handleSignUp} className="space-y-4 pt-4">
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email" required autoComplete="email"
-                            className="pl-10" disabled={!isFirebaseConfigured}
-                        />
-                    </div>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password (min. 6 characters)" required autoComplete="new-password"
-                            className="pl-10" disabled={!isFirebaseConfigured}
-                        />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={!isFirebaseConfigured}>
-                        Create Account
-                    </Button>
-                </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleSignIn} className="space-y-4 pt-4">
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                  type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email" required autoComplete="email"
+                  className="pl-10" disabled={!isFirebaseConfigured}
+              />
+            </div>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                  type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password" required autoComplete="current-password"
+                  className="pl-10" disabled={!isFirebaseConfigured}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={!isFirebaseConfigured}>
+              Sign In
+            </Button>
+          </form>
 
           <div className="relative flex py-2 items-center">
             <div className="flex-grow border-t border-border/20"></div>

@@ -26,7 +26,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
-  const { user, loading: authLoading, signUp, signIn, signOut } = useAuth();
+  const { user, loading: authLoading, signIn, signOut } = useAuth();
   const { toast } = useToast();
   
   const [data, setData] = useState<PortfolioData>(defaultData);
@@ -144,12 +144,6 @@ export default function HomePage() {
     });
   }, [debouncedSave]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isFirebaseConfigured) return;
-    await signUp(email, password);
-  };
-  
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFirebaseConfigured) return;
@@ -199,7 +193,6 @@ export default function HomePage() {
         password={password}
         setPassword={setPassword}
         handleSignIn={handleSignIn}
-        handleSignUp={handleSignUp}
         handleViewerMode={handleViewerMode}
         shatterActive={shatterActive}
         batAnimation={batAnimation}
