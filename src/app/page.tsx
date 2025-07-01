@@ -168,16 +168,15 @@ export default function HomePage() {
   }, [debouncedSave]);
   
   const handleProfileImageUpload = async (file: File) => {
-    if (!editMode || !file || isUploading) return;
+    if (!editMode || isUploading) return;
+    if (!file) {
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'No file selected.'});
+        return;
+    }
 
     setIsUploading(true);
-    const uploadPromise = uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
-    const timeoutPromise = new Promise<string>((_, reject) => 
-        setTimeout(() => reject(new Error('Upload timed out after 30 seconds.')), 30000)
-    );
-
     try {
-        const downloadURL = await Promise.race([uploadPromise, timeoutPromise]);
+        const downloadURL = await uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
         handleAboutUpdate('imageUrl', downloadURL);
         toast({ description: "Profile picture updated successfully."});
     } catch (error: any) {
@@ -193,17 +192,17 @@ export default function HomePage() {
   };
   
   const handleResumeUpload = async (file: File) => {
-    if (!editMode || !file || isUploading) return;
+    if (!editMode || isUploading) return;
+    if (!file) {
+        toast({ variant: 'destructive', title: 'Upload Failed', description: 'No file selected.'});
+        return;
+    }
 
     setIsUploading(true);
     const { id: toastId, update } = toast({ description: "Uploading resume..." });
-    const uploadPromise = uploadFile(file, `resumes/resume_${Date.now()}_${file.name}`);
-    const timeoutPromise = new Promise<string>((_, reject) => 
-        setTimeout(() => reject(new Error('Upload timed out after 30 seconds.')), 30000)
-    );
 
     try {
-        const downloadURL = await Promise.race([uploadPromise, timeoutPromise]);
+        const downloadURL = await uploadFile(file, `resumes/resume_${Date.now()}_${file.name}`);
         setData(prevData => {
             const newData = { ...prevData, resumeUrl: downloadURL };
             debouncedSave(newData);
