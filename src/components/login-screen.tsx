@@ -113,7 +113,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
       {batAnimation && (
         <div className="fixed inset-0 z-40 pointer-events-none">
           <Image
-            src="https://placehold.co/200x100.png"
+            src="https://placehold.co/200x100/000000/000000.png"
             data-ai-hint="bat silhouette"
             alt="Bat flyby"
             width={100}
