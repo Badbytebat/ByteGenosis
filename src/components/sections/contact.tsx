@@ -128,7 +128,7 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
     <motion.section 
       ref={ref}
       id="contact" 
-      className="py-20 px-4 sm:px-6 lg:px-8"
+      className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
       transition={transition}

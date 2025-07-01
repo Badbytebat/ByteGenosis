@@ -36,7 +36,7 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
     <motion.section 
       ref={ref}
       id="skills" 
-      className="py-20 px-4 sm:px-6 lg:px-8"
+      className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : 100 }}
       transition={transition}

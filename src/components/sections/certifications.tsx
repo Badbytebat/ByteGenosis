@@ -121,7 +121,7 @@ const CertificationsSection: React.FC<Props> = ({ data, editMode, updateEntry, a
     <motion.section 
       ref={ref}
       id="certifications" 
-      className="py-20 px-4 sm:px-6 lg:px-8"
+      className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
     >
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
