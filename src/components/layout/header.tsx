@@ -41,27 +41,29 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, scrollToSection,
         <LogoIcon className="group-hover:text-accent transition-colors duration-300" />
       </a>
 
-      <nav className="hidden lg:flex items-center gap-8">
-        {navItems.map((item) => (
-          <a
-            key={item}
-            href={`#${item}`}
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToSection(item);
-            }}
-            className="uppercase text-sm tracking-wider hover:text-accent transition-all relative group"
-          >
-            {item}
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-300"></span>
-          </a>
-        ))}
-      </nav>
+      <div className="flex items-center gap-4">
+        <nav className="hidden lg:flex items-center gap-8">
+          {navItems.map((item) => (
+            <a
+              key={item}
+              href={`#${item}`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection(item);
+              }}
+              className="uppercase text-sm tracking-wider hover:text-accent transition-all relative group"
+            >
+              {item}
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all duration-300"></span>
+            </a>
+          ))}
+        </nav>
 
-      <Button onClick={() => setDarkMode(!darkMode)} variant="ghost" size="icon" className="ml-4 hover:bg-accent/20 transition-all">
-        {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        <span className="sr-only">Toggle theme</span>
-      </Button>
+        <Button onClick={() => setDarkMode(!darkMode)} variant="ghost" size="icon" className="hover:bg-accent/20 transition-all">
+          {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
+      </div>
     </header>
   );
 };
