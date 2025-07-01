@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
-import { cn } from '@/lib/utils';
 
 type MatrixCursorProps = {
   darkMode: boolean;
@@ -32,16 +31,16 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
       });
     };
 
-    const createLightParticle = () => {
-        const glowDiv = document.createElement('div');
-        glowDiv.className = 'cursor-glow';
-        document.body.appendChild(glowDiv);
-        return glowDiv;
+    const createLightCursor = () => {
+        const cursorDiv = document.createElement('div');
+        cursorDiv.className = 'light-cursor'; // New class for the dark cursor
+        document.body.appendChild(cursorDiv);
+        return cursorDiv;
     };
     
-    let lightModeGlow: HTMLDivElement | null = null;
+    let lightModeCursor: HTMLDivElement | null = null;
     if (!darkMode) {
-        lightModeGlow = createLightParticle();
+        lightModeCursor = createLightCursor();
     }
 
 
@@ -54,9 +53,9 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
                 throttleTimeout.current = null;
             }, 30); // Shorten throttle for a denser trail
         }
-      } else if (lightModeGlow) {
-          lightModeGlow.style.left = `${cursorPos.current.x}px`;
-          lightModeGlow.style.top = `${cursorPos.current.y}px`;
+      } else if (lightModeCursor) {
+          lightModeCursor.style.left = `${cursorPos.current.x}px`;
+          lightModeCursor.style.top = `${cursorPos.current.y}px`;
       }
     };
     
@@ -68,7 +67,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
         clearTimeout(throttleTimeout.current);
       }
       // Clean up any remaining particles on unmount
-      document.querySelectorAll('.matrix-cursor-particle, .cursor-glow').forEach(el => el.remove());
+      document.querySelectorAll('.matrix-cursor-particle, .light-cursor').forEach(el => el.remove());
     };
   }, [darkMode]);
 
