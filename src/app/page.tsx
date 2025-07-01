@@ -182,34 +182,6 @@ export default function HomePage() {
     }
   };
 
-  const handleProfilePicUpload = async (file: File) => {
-    if (!editMode || !file) return;
-
-    console.log("Starting profile picture upload for file:", file.name);
-    const { id: toastId, update } = toast({ description: "Uploading profile picture..." });
-
-    try {
-        const downloadURL = await uploadFile(file, `profile-pictures/profile_${Date.now()}_${file.name}`);
-        console.log("Upload successful. Download URL:", downloadURL);
-
-        const newData = {
-            ...data,
-            about: {
-                ...data.about,
-                imageUrl: downloadURL
-            }
-        };
-
-        setData(newData);
-        debouncedSave(newData);
-
-        update({ id: toastId, description: "Profile picture updated successfully." });
-    } catch (error) {
-        console.error("Profile picture upload failed:", error);
-        update({ id: toastId, variant: 'destructive', title: 'Upload failed', description: 'Could not upload profile picture.' });
-    }
-  };
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFirebaseConfigured) return;
@@ -293,7 +265,6 @@ export default function HomePage() {
         <AboutSection 
           data={data.about}
           editMode={editMode}
-          onUpload={handleProfilePicUpload}
           onUpdate={handleAboutUpdate}
         />
         <ExperienceSection 

@@ -1,10 +1,8 @@
 "use client";
 
-import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VenetianMask, Upload } from "lucide-react";
+import { VenetianMask } from "lucide-react";
 import Image from "next/image";
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import type { AboutData } from '@/lib/types';
@@ -12,23 +10,12 @@ import type { AboutData } from '@/lib/types';
 type Props = {
   data: AboutData;
   editMode: boolean;
-  onUpload: (file: File) => void;
   onUpdate: (field: keyof AboutData, value: string) => void;
 };
 
-const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) => {
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            onUpload(file);
-        }
-    };
-
-    const handleUploadClick = () => {
-        fileInputRef.current?.click();
-    };
+const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate }) => {
+    // Hardcode the image URL to guarantee it shows up, bypassing database issues.
+    const profileImageUrl = "https://storage.googleapis.com/maker-me/uploads/user-file-1722449553073-1.png";
 
     return (
         <section id="about" className="py-20 px-4 sm:px-6 lg:px-8">
@@ -44,7 +31,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) =
                 <div className="md:col-span-2 relative">
                     <Card className="overflow-hidden border-2 border-accent/20 shadow-lg shadow-accent/10 transition-all duration-300">
                         <Image
-                            src={data.imageUrl}
+                            src={profileImageUrl}
                             data-ai-hint="professional portrait"
                             alt="Ritesh"
                             width={400}
@@ -53,20 +40,6 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) =
                             priority
                         />
                     </Card>
-                     {editMode && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                className="hidden"
-                                accept="image/*"
-                            />
-                            <Button onClick={handleUploadClick} variant="secondary">
-                                <Upload className="mr-2 h-4 w-4" /> Change Picture
-                            </Button>
-                        </div>
-                    )}
                 </div>
                 <div className="md:col-span-3">
                     <Card className="bg-card/50 border-primary/20 p-6 rounded-lg transition-all duration-300 hover:shadow-lg">
