@@ -5,18 +5,20 @@ import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Download, Upload, Loader2 } from "lucide-react";
+import { cn } from '@/lib/utils';
 
 type Props = {
   resumeUrl: string;
   editMode: boolean;
   onUpload: (file: File) => void;
   isUploading: boolean;
+  darkMode: boolean;
 };
 
-const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload, isUploading }) => {
+const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload, isUploading, darkMode }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const motionRef = useRef(null);
-  const isInView = useInView(motionRef, { amount: 0.2 });
+  const isInView = useInView(motionRef, { once: false, amount: 0.2 });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -29,14 +31,18 @@ const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload, isUploa
     fileInputRef.current?.click();
   };
 
+  const transition = darkMode 
+    ? { duration: 0.8, ease: "easeOut" } 
+    : { type: "spring", stiffness: 100, damping: 20 };
+
   return (
     <motion.section 
       ref={motionRef}
       id="resume" 
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-background"
+      className="py-20 px-4 sm:px-6 lg:px-8"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={transition}
     >
       <div className="max-w-4xl mx-auto text-center">
          <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
@@ -47,7 +53,12 @@ const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload, isUploa
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href={resumeUrl} download="Ritesh-Resume.pdf" target="_blank" rel="noopener noreferrer">
-            <Button size="lg" className="jelly-btn glass-effect rounded-full shadow-lg shadow-accent/30 border-accent/50 text-base py-6 px-8 hover:bg-accent hover:text-accent-foreground">
+            <Button size="lg" className={cn(
+              "rounded-full shadow-lg text-base py-6 px-8",
+              darkMode
+                ? "jelly-btn glass-effect border-accent/50 hover:bg-accent hover:text-accent-foreground shadow-accent/30"
+                : "light-btn"
+            )}>
               <Download className="w-5 h-5 mr-3" />
               Download Resume
             </Button>

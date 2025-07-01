@@ -206,8 +206,10 @@ export default function HomePage() {
 
   const handleViewerMode = () => {
     setBatAnimation(true);
-    document.documentElement.classList.add('viewer-mode-active');
-    setShowLogin(false);
+    setTimeout(() => {
+        document.documentElement.classList.add('viewer-mode-active');
+        setShowLogin(false);
+    }, 300); // Small delay for fade out to start
   };
   
   const handleLogout = async () => {
@@ -222,11 +224,8 @@ export default function HomePage() {
   };
   
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', darkMode);
+    document.documentElement.classList.toggle('light', !darkMode);
   }, [darkMode]);
 
   if (authLoading || initialDataLoading) {
@@ -264,8 +263,9 @@ export default function HomePage() {
           key="portfolio"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
+          className={darkMode ? 'dark' : 'light'}
         >
-          {!editMode && <MatrixCursor />}
+          {!editMode && <MatrixCursor darkMode={darkMode} />}
           <Header 
             darkMode={darkMode}
             setDarkMode={setDarkMode}
@@ -282,11 +282,12 @@ export default function HomePage() {
           )}
 
           <main className="flex min-h-screen flex-col bg-background">
-            <HeroSection scrollToSection={scrollToSection} />
+            <HeroSection scrollToSection={scrollToSection} darkMode={darkMode}/>
             <AboutSection 
               data={data.about}
               editMode={editMode}
               onUpdate={handleAboutUpdate}
+              darkMode={darkMode}
             />
             <ExperienceSection 
                 data={data.experience} 
@@ -294,6 +295,7 @@ export default function HomePage() {
                 updateEntry={handleUpdate as any}
                 addEntry={handleAdd as any}
                 deleteEntry={handleDelete as any}
+                darkMode={darkMode}
             />
             <SkillsSection 
                 data={data.skills} 
@@ -301,6 +303,7 @@ export default function HomePage() {
                 updateEntry={handleUpdate as any}
                 addEntry={handleAdd as any}
                 deleteEntry={handleDelete as any}
+                darkMode={darkMode}
             />
             <ProjectsSection 
                 data={data.projects} 
@@ -308,6 +311,7 @@ export default function HomePage() {
                 updateEntry={handleUpdate as any}
                 addEntry={handleAdd as any}
                 deleteEntry={handleDelete as any}
+                darkMode={darkMode}
             />
             <EducationSection 
                 data={educationItems} 
@@ -315,6 +319,7 @@ export default function HomePage() {
                 updateEntry={handleUpdate as any}
                 addEntry={handleAdd as any}
                 deleteEntry={handleDelete as any}
+                darkMode={darkMode}
             />
             <CertificationsSection 
                 data={certificationItems} 
@@ -322,12 +327,14 @@ export default function HomePage() {
                 updateEntry={handleUpdate as any}
                 addEntry={handleAdd as any}
                 deleteEntry={handleDelete as any}
+                darkMode={darkMode}
             />
             <ResumeSection 
                 resumeUrl={data.resumeUrl}
                 editMode={editMode}
                 onUpload={handleResumeUpload}
                 isUploading={isResumeUploading}
+                darkMode={darkMode}
             />
             <ContactSection
                 data={data.contact}
@@ -335,6 +342,7 @@ export default function HomePage() {
                 updateEntry={handleUpdate as any}
                 addEntry={handleAdd as any}
                 deleteEntry={handleDelete as any}
+                darkMode={darkMode}
             />
           </main>
           <Footer />

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // A sub-component for each timeline item to handle its own animation state
 type ExperienceItemProps = {
@@ -17,12 +18,13 @@ type ExperienceItemProps = {
   editMode: boolean;
   updateEntry: (section: 'experience', id: number, field: string, value: any) => void;
   deleteEntry: (section: 'experience', id: number) => void;
+  darkMode: boolean;
 };
 
-const ExperienceItem: React.FC<ExperienceItemProps> = ({ item, index, editMode, updateEntry, deleteEntry }) => {
+const ExperienceItem: React.FC<ExperienceItemProps> = ({ item, index, editMode, updateEntry, deleteEntry, darkMode }) => {
   const ref = useRef(null);
   // Trigger animation when the item is 30% in view. Reversible.
-  const isInView = useInView(ref, { amount: 0.3 });
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
 
   const handleUpdate = (id: number, field: keyof Experience, value: string) => {
     updateEntry('experience', id, field, value);
@@ -31,17 +33,28 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({ item, index, editMode, 
   // Determine the slide-in direction based on even/odd index
   const initialX = index % 2 !== 0 ? -100 : 100;
 
+  const transition = darkMode 
+    ? { duration: 0.8, ease: "easeOut" } 
+    : { type: "spring", stiffness: 100, damping: 20 };
+
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, x: initialX }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : initialX }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={transition}
       className="relative pl-8 sm:pl-0"
     >
       <div className="absolute left-0 sm:left-1/2 top-1 h-4 w-4 bg-primary rounded-full -translate-x-1/2 border-4 border-background"></div>
-      <Card className={`relative bg-card/50 border-primary/20 transition-all duration-300 hover:shadow-2xl hover:shadow-accent/20 hover:border-accent/50 ${index % 2 !== 0 ? 'sm:ml-0 sm:mr-[55%] sm:text-right sm:pr-10' : 'sm:ml-[55%] sm:pl-10'}`}>
-        <CardHeader>
+      <Card className={cn(
+        "relative transition-all duration-300",
+        darkMode 
+          ? `bg-card/50 border-primary/20 hover:shadow-2xl hover:shadow-accent/20 hover:border-accent/50 ${index % 2 !== 0 ? 'sm:ml-0 sm:mr-[55%] sm:text-right sm:pr-10' : 'sm:ml-[55%] sm:pl-10'}`
+          : `bg-card border light-card ${index % 2 !== 0 ? 'sm:ml-0 sm:mr-[55%] sm:text-right sm:items-end' : 'sm:ml-[55%]'}`
+      )}>
+        <CardHeader className={cn(
+          index % 2 !== 0 && 'sm:text-right sm:items-end'
+        )}>
           {editMode ? (
             <Input value={item.role} onChange={(e) => handleUpdate(item.id, 'role', e.target.value)} placeholder="Role" className="text-lg font-bold" />
           ) : (
@@ -82,11 +95,12 @@ type Props = {
   updateEntry: (section: 'experience', id: number, field: string, value: any) => void;
   addEntry: (section: 'experience') => void;
   deleteEntry: (section: 'experience', id: number) => void;
+  darkMode: boolean;
 };
 
-const ExperienceSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry }) => {
+const ExperienceSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry, darkMode }) => {
   return (
-    <section id="experience" className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
+    <section id="experience" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           Work Experience
@@ -106,6 +120,7 @@ const ExperienceSection: React.FC<Props> = ({ data, editMode, updateEntry, addEn
             editMode={editMode} 
             updateEntry={updateEntry} 
             deleteEntry={deleteEntry}
+            darkMode={darkMode}
           />
         ))}
         {editMode && (

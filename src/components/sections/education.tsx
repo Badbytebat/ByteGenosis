@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type AnimatedCardProps = {
   item: Qualification;
@@ -16,20 +17,30 @@ type AnimatedCardProps = {
   editMode: boolean;
   handleUpdate: (id: number, field: keyof Qualification, value: string) => void;
   deleteEntry: (section: 'qualifications', id: number) => void;
+  darkMode: boolean;
 };
 
-const AnimatedEducationCard: React.FC<AnimatedCardProps> = ({ item, index, editMode, handleUpdate, deleteEntry }) => {
+const AnimatedEducationCard: React.FC<AnimatedCardProps> = ({ item, index, editMode, handleUpdate, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.2 });
+  const isInView = useInView(ref, { once: false, amount: 0.2 });
+
+  const transition = darkMode 
+    ? { duration: 0.8, delay: index * 0.1, ease: "easeOut" } 
+    : { type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 };
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, x: -100 }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : -100 }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
+      transition={transition}
     >
-      <Card className="bg-card/50 border-primary/20 transition-all duration-300 hover:shadow-lg hover:border-accent/50 hover:scale-105 hover:-rotate-1">
+      <Card className={cn(
+        "transition-all duration-300",
+        darkMode 
+          ? "bg-card/50 border-primary/20 hover:shadow-lg hover:border-accent/50 hover:scale-105 hover:-rotate-1"
+          : "bg-card border light-card"
+      )}>
         <CardHeader>
           <div className="flex justify-between items-start">
               <div>
@@ -74,11 +85,11 @@ type Props = {
   updateEntry: (section: 'qualifications', id: number, field: string, value: any) => void;
   addEntry: (section: 'qualifications', type: 'education' | 'certification') => void;
   deleteEntry: (section: 'qualifications', id: number) => void;
+  darkMode: boolean;
 };
 
-const EducationSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry }) => {
+const EducationSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.1 });
   const handleUpdate = (id: number, field: keyof Qualification, value: string) => {
     updateEntry('qualifications', id, field, value);
   };
@@ -107,6 +118,7 @@ const EducationSection: React.FC<Props> = ({ data, editMode, updateEntry, addEnt
             editMode={editMode}
             handleUpdate={handleUpdate}
             deleteEntry={deleteEntry}
+            darkMode={darkMode}
           />
         ))}
         {editMode && (

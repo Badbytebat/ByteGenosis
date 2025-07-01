@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import type { ContactMethod } from "@/lib/types";
 import { Github, Linkedin, Mail, Plus, Trash2, Instagram } from "lucide-react";
 import { WhatsappIcon, KaggleIcon, HackerRankIcon, GeeksforGeeksIcon } from "@/components/layout/custom-icons";
+import { cn } from '@/lib/utils';
 
 type AnimatedCardProps = {
   method: ContactMethod;
@@ -18,6 +19,7 @@ type AnimatedCardProps = {
   handleUpdate: (id: number, field: keyof ContactMethod, value: string) => void;
   deleteEntry: (section: 'contact', id: number) => void;
   formatHref: (url: string) => string;
+  darkMode: boolean;
 };
 
 // Available icons: Mail, Linkedin, Github, Instagram, Whatsapp, Kaggle, HackerRank, GeeksforGeeks
@@ -32,19 +34,28 @@ const ICONS: { [key: string]: React.ElementType } = {
   GeeksforGeeks: GeeksforGeeksIcon,
 };
 
-const AnimatedContactCard: React.FC<AnimatedCardProps> = ({ method, index, editMode, handleUpdate, deleteEntry, formatHref }) => {
+const AnimatedContactCard: React.FC<AnimatedCardProps> = ({ method, index, editMode, handleUpdate, deleteEntry, formatHref, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.2 });
+  const isInView = useInView(ref, { once: false, amount: 0.2 });
   const IconComponent = ICONS[method.icon] || Mail;
+
+  const transition = darkMode 
+    ? { duration: 0.8, delay: index * 0.1, ease: "easeOut" } 
+    : { type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 };
   
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
+      transition={transition}
     >
-      <Card key={method.id} className="text-center p-6 bg-card/50 border-primary/20 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-1">
+      <Card key={method.id} className={cn(
+        "text-center p-6 transition-all duration-300 h-full",
+        darkMode
+          ? "bg-card/50 border-primary/20 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-1"
+          : "bg-card border light-card"
+      )}>
         {editMode ? (
           <div className="space-y-3 text-left">
             <div>
@@ -68,9 +79,9 @@ const AnimatedContactCard: React.FC<AnimatedCardProps> = ({ method, index, editM
             </Button>
           </div>
         ) : (
-          <a href={formatHref(method.href)} target="_blank" rel="noopener noreferrer">
+          <a href={formatHref(method.href)} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center h-full">
             <CardContent className="flex flex-col items-center justify-center gap-4">
-                <IconComponent className="w-10 h-10 text-accent"/>
+                <IconComponent className={cn("w-10 h-10 text-accent", !darkMode && "light-icon-pop")} style={{ animationDelay: `${index * 100}ms` }}/>
                 <p className="font-bold text-lg">{method.label}</p>
                 <p className="text-sm text-muted-foreground">{method.value}</p>
             </CardContent>
@@ -87,9 +98,10 @@ type Props = {
   updateEntry: (section: 'contact', id: number, field: string, value: any) => void;
   addEntry: (section: 'contact') => void;
   deleteEntry: (section: 'contact', id: number) => void;
+  darkMode: boolean;
 };
 
-const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry }) => {
+const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry, darkMode }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 0.1 });
   
@@ -108,6 +120,10 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
     return `https://${url}`;
   };
 
+  const transition = darkMode 
+    ? { duration: 0.8, ease: "easeOut" } 
+    : { type: "spring", stiffness: 100, damping: 20 };
+
   return (
     <motion.section 
       ref={ref}
@@ -115,14 +131,14 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
       className="py-20 px-4 sm:px-6 lg:px-8"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={transition}
     >
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           Contact Me
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Have a question or want to work together? Send a signal.
+          {darkMode ? "Have a question or want to work together? Send a signal." : "Let's connect. I'm available for new opportunities."}
         </p>
       </div>
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -135,6 +151,7 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
             handleUpdate={handleUpdate}
             deleteEntry={deleteEntry}
             formatHref={formatHref}
+            darkMode={darkMode}
           />
         ))}
         {editMode && (

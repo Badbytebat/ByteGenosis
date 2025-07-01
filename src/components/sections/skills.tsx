@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 type Props = {
   data: Skill[];
@@ -16,15 +17,20 @@ type Props = {
   updateEntry: (section: 'skills', id: number, field: string, value: any) => void;
   addEntry: (section: 'skills') => void;
   deleteEntry: (section: 'skills', id: number) => void;
+  darkMode: boolean;
 };
 
-const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry }) => {
+const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { amount: 0.2 });
+  const isInView = useInView(ref, { once: false, amount: 0.2 });
 
   const handleUpdate = (id: number, field: keyof Skill, value: string | number) => {
     updateEntry('skills', id, field, value);
   };
+  
+  const transition = darkMode 
+      ? { duration: 0.8, ease: "easeOut" } 
+      : { type: "spring", stiffness: 100, damping: 20 };
 
   return (
     <motion.section 
@@ -33,19 +39,24 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
       className="py-20 px-4 sm:px-6 lg:px-8"
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : 100 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      transition={transition}
     >
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-          My Arsenal
+          { darkMode ? "My Arsenal" : "My Skills" }
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          The tools and technologies I wield.
+          { darkMode ? "The tools and technologies I wield." : "A summary of my technical abilities."}
         </p>
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-card/50 border-primary/20 p-6 sm:p-10 transition-all duration-300 hover:shadow-lg hover:border-accent/50">
+        <Card className={cn(
+          "p-6 sm:p-10 transition-all duration-300",
+          darkMode
+            ? "bg-card/50 border-primary/20 hover:shadow-lg hover:border-accent/50"
+            : "bg-card border light-card"
+        )}>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {data.map((skill) => (
               <div key={skill.id} className="space-y-2 group">

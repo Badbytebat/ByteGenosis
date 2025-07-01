@@ -22,7 +22,10 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, scrollToSection,
   const navItems = ['home', 'about', 'experience', 'skills', 'projects', 'education', 'certifications', 'resume', 'contact'];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 px-6 py-4 flex justify-between items-center bg-background/50 backdrop-blur-lg border-b border-white/10">
+    <header className={cn(
+      "fixed top-0 left-0 right-0 z-40 px-6 py-4 flex justify-between items-center transition-colors duration-300",
+      darkMode ? "bg-background/50 backdrop-blur-lg border-b border-white/10" : "bg-background/80 backdrop-blur-lg border-b"
+    )}>
       <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }} className="flex items-center gap-2 group">
         {editMode ? (
            <Input 
