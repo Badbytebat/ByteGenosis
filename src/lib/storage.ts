@@ -2,15 +2,6 @@
 import { storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const UPLOAD_TIMEOUT = 30000; // 30 seconds
-
-// A helper promise that rejects after a certain time
-const timeout = (ms: number, message: string): Promise<never> => {
-    return new Promise((_, reject) => {
-        setTimeout(() => reject(new Error(message)), ms);
-    });
-};
-
 export const uploadFile = async (file: File, path: string): Promise<string> => {
   if (!file) {
     throw new Error('No file provided for upload.');
@@ -19,39 +10,28 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
   const storageRef = ref(storage, path);
 
   try {
-    // The actual upload operation
-    const uploadOperation = async () => {
-        const snapshot = await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        return downloadURL;
-    };
-    
-    // Race the upload against a timeout
-    const downloadURL = await Promise.race([
-        uploadOperation(),
-        timeout(UPLOAD_TIMEOUT, `Upload timed out after ${UPLOAD_TIMEOUT / 1000} seconds. This could be due to a network issue or Firebase Storage security rules.`)
-    ]);
-
+    const snapshot = await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(snapshot.ref);
     return downloadURL;
 
   } catch (error: any) {
-    console.error("Detailed upload error:", error);
+    console.error("Detailed upload error from Firebase:", error);
     
     // Provide more specific error messages based on Firebase error codes
     switch (error.code) {
       case 'storage/unauthorized':
-        throw new Error('Permission denied. Please check your Firebase Storage security rules.');
+        throw new Error('Permission Denied: Your Firebase Storage security rules are preventing this upload. Please ensure you are logged in and the rules allow writes to this path.');
       case 'storage/unauthenticated':
-        throw new Error('Authentication required. Please sign in again.');
-      case 'storage/object-not-found':
-          throw new Error('File not found. This can happen if the upload was interrupted.');
-      case 'storage/quota-exceeded':
-        throw new Error('Storage quota exceeded. Please contact the site administrator.');
+        throw new Error('Authentication Required: You must be signed in to upload files. Please sign in again.');
+      case 'storage/retry-limit-exceeded':
+        throw new Error('Network Error: The upload failed after multiple retries. Please check your internet connection.');
+      case 'storage/canceled':
+         throw new Error('Upload Canceled: The upload was canceled by the user or the browser.');
       case 'storage/unknown':
-        throw new Error('An unknown storage error occurred. Please check your network connection.');
+        throw new Error('An unknown storage error occurred. Please check the developer console and your Firebase setup.');
       default:
-        // Re-throw the original error if it's not a known Firebase error (like our timeout)
-        throw error;
+        // Re-throw a generic error but include the original code
+        throw new Error(`Upload failed with an unexpected error. Code: ${error.code || 'N/A'}`);
     }
   }
 };
