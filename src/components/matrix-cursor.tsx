@@ -26,9 +26,24 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
       document.body.appendChild(particle);
 
       particle.addEventListener('animationend', () => {
-        particle.remove();
+        if (particle.parentElement) {
+          particle.remove();
+        }
       });
     };
+
+    const createLightParticle = () => {
+        const glowDiv = document.createElement('div');
+        glowDiv.className = 'cursor-glow';
+        document.body.appendChild(glowDiv);
+        return glowDiv;
+    };
+    
+    let lightModeGlow: HTMLDivElement | null = null;
+    if (!darkMode) {
+        lightModeGlow = createLightParticle();
+    }
+
 
     const handleMouseMove = (e: MouseEvent) => {
       cursorPos.current = { x: e.clientX, y: e.clientY };
@@ -39,6 +54,9 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
                 throttleTimeout.current = null;
             }, 30); // Shorten throttle for a denser trail
         }
+      } else if (lightModeGlow) {
+          lightModeGlow.style.left = `${cursorPos.current.x}px`;
+          lightModeGlow.style.top = `${cursorPos.current.y}px`;
       }
     };
     
@@ -54,12 +72,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
     };
   }, [darkMode]);
 
-  if (darkMode) {
-    return null; // Dark mode uses DOM manipulation for the trail
-  }
-
-  // Light mode uses a simple div for the glow
-  return <div className="cursor-glow" style={{ left: `${cursorPos.current.x}px`, top: `${cursorPos.current.y}px` }} />;
+  return null; // Both modes use DOM manipulation, so this component renders nothing itself.
 };
 
 export default MatrixCursor;
