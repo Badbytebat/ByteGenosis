@@ -176,27 +176,34 @@ export default function HomePage() {
             debouncedSave(newData);
             return newData;
         });
-        update({ description: "Resume uploaded successfully." });
+        update({ id: toastId, description: "Resume uploaded successfully." });
     } catch (error) {
-        update({ variant: 'destructive', title: 'Upload failed', description: 'Could not upload resume.' });
+        update({ id: toastId, variant: 'destructive', title: 'Upload failed', description: 'Could not upload resume.' });
     }
   };
 
   const handleProfilePicUpload = async (file: File) => {
     if (!editMode || !file) return;
 
+    console.log("Starting profile picture upload for file:", file.name);
     const { id: toastId, update } = toast({ description: "Uploading profile picture..." });
+
     try {
         const downloadURL = await uploadFile(file, `profile-pictures/profile_${Date.now()}_${file.name}`);
+        console.log("Upload successful. Download URL:", downloadURL);
+
         setData(prevData => {
             const newAbout = { ...prevData.about, imageUrl: downloadURL };
             const newData = { ...prevData, about: newAbout };
+            console.log("Updating local state and preparing to save to Firestore.");
             debouncedSave(newData);
             return newData;
         });
-        update({ description: "Profile picture updated successfully." });
+
+        update({ id: toastId, description: "Profile picture updated successfully." });
     } catch (error) {
-        update({ variant: 'destructive', title: 'Upload failed', description: 'Could not upload profile picture.' });
+        console.error("Profile picture upload failed:", error);
+        update({ id: toastId, variant: 'destructive', title: 'Upload failed', description: 'Could not upload profile picture.' });
     }
   };
 

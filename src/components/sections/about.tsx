@@ -49,7 +49,8 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) =
                             alt="Ritesh"
                             width={400}
                             height={500}
-                            className="object-cover w-full h-full"
+                            className="object-cover w-full h-auto rounded-lg"
+                            priority
                         />
                     </Card>
                      {editMode && (
