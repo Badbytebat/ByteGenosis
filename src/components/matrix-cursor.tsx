@@ -5,11 +5,14 @@ import React, { useEffect, useRef } from 'react';
 
 const MatrixCursor = () => {
   const throttleTimeout = useRef<NodeJS.Timeout | null>(null);
+  // Katakana characters for a more authentic Matrix feel
+  const CHARS = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
 
   useEffect(() => {
     const createParticle = (x: number, y: number) => {
-      const particle = document.createElement('div');
-      particle.className = 'glow-cursor-particle';
+      const particle = document.createElement('span'); // Use span for text
+      particle.className = 'matrix-cursor-particle';
+      particle.textContent = CHARS.charAt(Math.floor(Math.random() * CHARS.length));
       particle.style.left = `${x}px`;
       particle.style.top = `${y}px`;
       
@@ -26,7 +29,7 @@ const MatrixCursor = () => {
             createParticle(clientX, clientY);
             throttleTimeout.current = setTimeout(() => {
                 throttleTimeout.current = null;
-            }, 50); // Throttle to every 50ms
+            }, 30); // Shorten throttle for a denser trail
         }
     };
 
@@ -37,6 +40,8 @@ const MatrixCursor = () => {
       if (throttleTimeout.current) {
         clearTimeout(throttleTimeout.current);
       }
+      // Clean up any remaining particles on unmount
+      document.querySelectorAll('.matrix-cursor-particle').forEach(el => el.remove());
     };
   }, []);
 

@@ -71,27 +71,27 @@ html.viewer-mode-active, html.viewer-mode-active * {
   cursor: none !important;
 }
 
-/* GLOW CURSOR TRAIL */
-.glow-cursor-particle {
+/* MATRIX CURSOR TRAIL */
+.matrix-cursor-particle {
   position: fixed;
-  transform: translate(-50%, -50%); /* Center the character on the cursor */
-  width: 20px;
-  height: 20px;
-  background-color: hsl(var(--accent));
-  border-radius: 50%;
-  filter: blur(10px);
+  transform: translate(-50%, -50%);
+  font-family: 'Space Grotesk', monospace; /* Use a monospace/techy font */
+  font-size: 1.2rem;
+  color: #00ff41; /* Classic matrix green */
+  text-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41;
   pointer-events: none;
   z-index: 9999;
-  animation: cursor-fade 500ms linear forwards;
+  user-select: none;
+  animation: matrix-fade 800ms linear forwards;
 }
 
-@keyframes cursor-fade {
+@keyframes matrix-fade {
   from {
-    opacity: 0.7;
-    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    transform: translate(-50%, -50%);
   }
   to {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0);
+    transform: translate(-50%, -50%) translateY(30px); /* Fall down slightly */
   }
 }
