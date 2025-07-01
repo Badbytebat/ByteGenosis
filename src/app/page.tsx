@@ -26,7 +26,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
-  const { user, loading: authLoading, sendSignInLink, signOut } = useAuth();
+  const { user, loading: authLoading, signUp, signIn, signOut } = useAuth();
   const { toast } = useToast();
   
   const [data, setData] = useState<PortfolioData>(defaultData);
@@ -35,6 +35,7 @@ export default function HomePage() {
   const [editMode, setEditMode] = useState(false);
 
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(true);
   
   const [shatterActive, setShatterActive] = useState(false);
@@ -143,10 +144,16 @@ export default function HomePage() {
     });
   }, [debouncedSave]);
 
-  const handleEmailSubmit = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFirebaseConfigured) return;
-    await sendSignInLink(email);
+    await signUp(email, password);
+  };
+  
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFirebaseConfigured) return;
+    await signIn(email, password);
   };
 
   const handleViewerMode = () => {
@@ -189,7 +196,10 @@ export default function HomePage() {
       <LoginScreen
         email={email}
         setEmail={setEmail}
-        handleEmailSubmit={handleEmailSubmit}
+        password={password}
+        setPassword={setPassword}
+        handleSignIn={handleSignIn}
+        handleSignUp={handleSignUp}
         handleViewerMode={handleViewerMode}
         shatterActive={shatterActive}
         batAnimation={batAnimation}

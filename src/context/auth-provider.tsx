@@ -3,12 +3,10 @@
 
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import {
-  Auth,
   User,
   onAuthStateChanged,
-  sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInWithEmailLink as firebaseSignInWithEmailLink,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signOut as firebaseSignOut
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -17,7 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  sendSignInLink: (email: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -34,68 +33,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
     });
 
-    const handleEmailLinkSignIn = async () => {
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        setLoading(true);
-        let email = window.localStorage.getItem('emailForSignIn');
-        if (!email) {
-          email = window.prompt('Please provide your email for confirmation');
-        }
-
-        if (email) {
-          try {
-            await firebaseSignInWithEmailLink(auth, email, window.location.href);
-            window.localStorage.removeItem('emailForSignIn');
-            toast({ title: 'Success', description: 'Signed in successfully.' });
-          } catch (error) {
-            console.error('Sign in with email link error', error);
-            toast({ title: 'Error', description: 'Failed to sign in. The link may be invalid or expired.', variant: 'destructive' });
-          } finally {
-            // Clean the URL
-            window.history.replaceState(null, '', window.location.pathname);
-          }
-        } else {
-            toast({ title: 'Error', description: 'Email not found for sign in.', variant: 'destructive' });
-        }
-        setLoading(false);
-      }
-    };
-    
-    handleEmailLinkSignIn();
-
     return () => unsubscribe();
-  }, [toast]);
-
-  const sendSignInLink = async (email: string) => {
-    const actionCodeSettings = {
-      url: window.location.origin,
-      handleCodeInApp: true,
-    };
+  }, []);
+  
+  const signUp = async (email: string, password: string) => {
+    setLoading(true);
     try {
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-      window.localStorage.setItem('emailForSignIn', email);
-      toast({ title: 'Check your email', description: `A sign-in link has been sent to ${email}.` });
+      await createUserWithEmailAndPassword(auth, email, password);
+      toast({ title: "Account Created", description: "You have been successfully signed up." });
     } catch (error: any) {
-      console.error('Send sign in link error', error);
-      if (error.code === 'auth/operation-not-allowed') {
-        toast({
-          variant: 'destructive',
-          title: 'Sign-in Method Disabled',
-          description: 'Email link (passwordless) sign-in is not enabled in your Firebase project. Please enable it in the Firebase Console.',
-          duration: 10000,
-        });
-      } else if (error.code === 'auth/invalid-api-key' || (error.message && error.message.includes('api-key-not-valid'))) {
-        toast({
-          variant: 'destructive',
-          title: 'Firebase Configuration Error',
-          description: 'The Firebase API key is not valid. Please check your .env.local file and restart the development server.',
-          duration: 10000,
-        });
-      } else {
-        toast({ title: 'Error', description: 'Could not send sign-in link. Please try again.', variant: 'destructive' });
+      console.error("Sign up error", error);
+      let description = "An unknown error occurred.";
+      if (error.code === 'auth/email-already-in-use') {
+          description = 'This email is already in use. Please sign in instead.';
+      } else if (error.code === 'auth/weak-password') {
+          description = 'The password is too weak. Please choose a stronger password.';
+      } else if (error.code === 'auth/invalid-email') {
+          description = 'The email address is not valid.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+         description = 'Email/Password sign up is not enabled in your Firebase project.';
       }
+      toast({ title: 'Sign Up Failed', description, variant: 'destructive' });
+    } finally {
+        setLoading(false);
     }
   };
+
+  const signIn = async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({ title: 'Signed In', description: 'Welcome back!' });
+    } catch (error: any) {
+      console.error("Sign in error", error);
+      let description = "An unknown error occurred.";
+       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+          description = 'Invalid email or password. Please try again.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+         description = 'Email/Password sign in is not enabled in your Firebase project.';
+      }
+      toast({ title: 'Sign In Failed', description, variant: 'destructive' });
+    } finally {
+        setLoading(false);
+    }
+  };
+
 
   const signOut = async () => {
     try {
@@ -107,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const value = { user, loading, sendSignInLink, signOut };
+  const value = { user, loading, signUp, signIn, signOut };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
