@@ -5,7 +5,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Eye, Mail } from 'lucide-react';
+import { Eye, Mail, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 
 type LoginScreenProps = {
@@ -15,12 +15,14 @@ type LoginScreenProps = {
   handleViewerMode: () => void;
   shatterActive: boolean;
   batAnimation: boolean;
+  isFirebaseConfigured: boolean;
 };
 
 const LoginScreen: React.FC<LoginScreenProps> = ({
   email, setEmail,
   handleEmailSubmit, handleViewerMode,
-  shatterActive, batAnimation
+  shatterActive, batAnimation,
+  isFirebaseConfigured
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black overflow-hidden">
@@ -36,6 +38,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {!isFirebaseConfigured && (
+            <div className="p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/50 flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+              <div>
+                <p className="font-bold">Firebase Not Configured</p>
+                <p className="text-xs">
+                  Add your Firebase credentials to the <code>.env.local</code> file and restart the server. Authentication is disabled.
+                </p>
+              </div>
+            </div>
+          )}
           <form onSubmit={handleEmailSubmit} className="space-y-4">
             <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -47,9 +60,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                     required
                     autoComplete="email"
                     className="pl-10 text-center"
+                    disabled={!isFirebaseConfigured}
                 />
             </div>
-            <Button type="submit" className="w-full glass-effect rounded-full shadow-lg shadow-primary/30 border-primary/50 hover:bg-primary hover:text-primary-foreground">
+            <Button type="submit" className="w-full glass-effect rounded-full shadow-lg shadow-primary/30 border-primary/50 hover:bg-primary hover:text-primary-foreground" disabled={!isFirebaseConfigured}>
               Request Access
             </Button>
           </form>

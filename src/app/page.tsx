@@ -40,6 +40,8 @@ export default function HomePage() {
   const [shatterActive, setShatterActive] = useState(false);
   const [batAnimation, setBatAnimation] = useState(false);
 
+  const isFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'CHANGEME';
+
   // Fetch initial data
   useEffect(() => {
     const fetchData = async () => {
@@ -143,6 +145,7 @@ export default function HomePage() {
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFirebaseConfigured) return;
     await sendSignInLink(email);
   };
 
@@ -190,6 +193,7 @@ export default function HomePage() {
         handleViewerMode={handleViewerMode}
         shatterActive={shatterActive}
         batAnimation={batAnimation}
+        isFirebaseConfigured={isFirebaseConfigured}
       />
     );
   }
