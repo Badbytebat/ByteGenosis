@@ -36,7 +36,7 @@ const ExperienceSection: React.FC<Props> = ({ data, editMode, updateEntry, addEn
         {data.map((item, index) => (
           <div key={item.id} className="relative pl-8 sm:pl-0">
              <div className="absolute left-0 sm:left-1/2 top-1 h-4 w-4 bg-primary rounded-full -translate-x-1/2 border-4 border-background"></div>
-            <Card className={`sm:ml-[55%] sm:pl-10 relative bg-card/50 border-primary/20 ${index % 2 !== 0 ? 'sm:ml-0 sm:mr-[55%] sm:text-right sm:pr-10' : ''}`}>
+            <Card className={`sm:ml-[55%] sm:pl-10 relative bg-card/50 border-primary/20 transition-all duration-300 hover:shadow-lg hover:scale-105 ${index % 2 !== 0 ? 'sm:ml-0 sm:mr-[55%] sm:text-right sm:pr-10 hover:rotate-1' : 'hover:-rotate-1'}`}>
               <CardHeader>
                 {editMode ? (
                   <Input value={item.role} onChange={(e) => handleUpdate(item.id, 'role', e.target.value)} placeholder="Role" className="text-lg font-bold" />

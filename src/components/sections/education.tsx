@@ -33,7 +33,7 @@ const EducationSection: React.FC<Props> = ({ data, editMode, updateEntry, addEnt
 
       <div className="max-w-4xl mx-auto space-y-6">
         {data.map((item) => (
-          <Card key={item.id} className="bg-card/50 border-primary/20">
+          <Card key={item.id} className="bg-card/50 border-primary/20 transition-all duration-300 hover:shadow-lg hover:border-accent/50 hover:scale-105 hover:-rotate-1">
             <CardHeader>
               <div className="flex justify-between items-start">
                   <div>

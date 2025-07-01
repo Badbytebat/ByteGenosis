@@ -34,7 +34,7 @@ const ProjectsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntr
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {data.map((item) => (
-          <Card key={item.id} className="flex flex-col bg-card/50 border-primary/20 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
+          <Card key={item.id} className="flex flex-col bg-card/50 border-primary/20 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-1">
             <CardHeader>
               {editMode ? (
                 <Input value={item.title} onChange={(e) => handleUpdate(item.id, 'title', e.target.value)} placeholder="Title" className="text-lg font-bold" />

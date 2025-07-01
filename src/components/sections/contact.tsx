@@ -42,7 +42,7 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
         {data.map(method => {
           const IconComponent = ICONS[method.icon] || Mail;
           return (
-            <Card key={method.id} className="text-center p-6 bg-card/50 border-primary/20 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:-translate-y-1">
+            <Card key={method.id} className="text-center p-6 bg-card/50 border-primary/20 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-2">
               {editMode ? (
                 <div className="space-y-3 text-left">
                   <div>

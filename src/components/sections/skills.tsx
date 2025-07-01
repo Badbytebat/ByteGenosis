@@ -32,7 +32,7 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
       </div>
 
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-card/50 border-primary/20 p-6 sm:p-10">
+        <Card className="bg-card/50 border-primary/20 p-6 sm:p-10 transition-all duration-300 hover:shadow-lg hover:border-accent/50 hover:scale-[1.02] hover:-rotate-1">
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {data.map((skill) => (
               <div key={skill.id} className="space-y-2 group">

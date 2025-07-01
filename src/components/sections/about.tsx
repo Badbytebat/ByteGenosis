@@ -42,7 +42,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) =
             </div>
             <div className="max-w-5xl mx-auto grid md:grid-cols-5 gap-8 items-center">
                 <div className="md:col-span-2 relative">
-                    <Card className="overflow-hidden border-2 border-accent/20 shadow-lg shadow-accent/10">
+                    <Card className="overflow-hidden border-2 border-accent/20 shadow-lg shadow-accent/10 transition-all duration-300 hover:scale-105 hover:rotate-1">
                         <Image
                             src={data.imageUrl}
                             data-ai-hint="professional portrait"
@@ -68,7 +68,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) =
                     )}
                 </div>
                 <div className="md:col-span-3">
-                    <Card className="bg-card/50 border-primary/20 p-6 rounded-lg">
+                    <Card className="bg-card/50 border-primary/20 p-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:-rotate-1">
                         <CardHeader>
                              <CardTitle className="flex items-center gap-2 font-headline text-2xl">
                                 <VenetianMask className="text-primary"/>
