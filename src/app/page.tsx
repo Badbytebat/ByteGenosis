@@ -13,7 +13,7 @@ import { uploadFile } from '@/lib/storage';
 import LoginScreen from '@/components/login-screen';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import CustomCursor from '@/components/custom-cursor';
+import MatrixCursor from '@/components/matrix-cursor';
 import HeroSection from '@/components/sections/hero';
 import AboutSection from '@/components/sections/about';
 import ExperienceSection from '@/components/sections/experience';
@@ -262,7 +262,7 @@ export default function HomePage() {
   
   return (
     <>
-      {!editMode && <CustomCursor />}
+      {!editMode && <MatrixCursor />}
       <Header 
         darkMode={darkMode}
         setDarkMode={setDarkMode}

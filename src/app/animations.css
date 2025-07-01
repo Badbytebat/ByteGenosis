@@ -85,3 +85,27 @@
 html.viewer-mode-active, html.viewer-mode-active * {
   cursor: none !important;
 }
+
+/* MATRIX CURSOR TRAIL */
+.matrix-bit {
+  position: fixed;
+  transform: translate(-50%, -50%); /* Center the character on the cursor */
+  color: #39ff14; /* Neon green */
+  font-family: 'monospace';
+  font-size: 1.1rem;
+  text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+  pointer-events: none;
+  z-index: 9999;
+  animation: matrix-fade 400ms linear forwards;
+}
+
+@keyframes matrix-fade {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 25px)) scale(0.5); /* Move down and shrink */
+  }
+}
