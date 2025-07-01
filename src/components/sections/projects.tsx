@@ -28,7 +28,7 @@ const AnimatedProjectCard: React.FC<AnimatedCardProps> = ({ item, index, editMod
       ref={ref}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
     >
       <Card className="flex flex-col bg-card/50 border-primary/20 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-1 h-full">
         <CardHeader>
@@ -86,12 +86,18 @@ type Props = {
 };
 
 const ProjectsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, amount: 0.1 });
   const handleUpdate = (id: number, field: keyof Project, value: string | string[]) => {
     updateEntry('projects', id, field, value);
   };
   
   return (
-    <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
+    <motion.section 
+      ref={ref}
+      id="projects" 
+      className="py-20 px-4 sm:px-6 lg:px-8 bg-background"
+    >
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           Case Files
@@ -120,7 +126,7 @@ const ProjectsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntr
           </Card>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 };
 

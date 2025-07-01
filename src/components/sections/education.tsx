@@ -27,7 +27,7 @@ const AnimatedEducationCard: React.FC<AnimatedCardProps> = ({ item, index, editM
       ref={ref}
       initial={{ opacity: 0, x: -100 }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : -100 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
     >
       <Card className="bg-card/50 border-primary/20 transition-all duration-300 hover:shadow-lg hover:border-accent/50 hover:scale-105 hover:-rotate-1">
         <CardHeader>
@@ -77,12 +77,18 @@ type Props = {
 };
 
 const EducationSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, amount: 0.1 });
   const handleUpdate = (id: number, field: keyof Qualification, value: string) => {
     updateEntry('qualifications', id, field, value);
   };
 
   return (
-    <section id="education" className="py-20 px-4 sm:px-6 lg:px-8">
+    <motion.section 
+      ref={ref}
+      id="education" 
+      className="py-20 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-4xl mx-auto text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           Education
@@ -111,7 +117,7 @@ const EducationSection: React.FC<Props> = ({ data, editMode, updateEntry, addEnt
           </div>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 };
 

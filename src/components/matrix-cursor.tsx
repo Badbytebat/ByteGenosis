@@ -9,8 +9,7 @@ const MatrixCursor = () => {
   useEffect(() => {
     const createParticle = (x: number, y: number) => {
       const particle = document.createElement('div');
-      particle.className = 'matrix-bit';
-      particle.textContent = Math.random() > 0.5 ? '1' : '0';
+      particle.className = 'glow-cursor-particle';
       particle.style.left = `${x}px`;
       particle.style.top = `${y}px`;
       
@@ -27,7 +26,7 @@ const MatrixCursor = () => {
             createParticle(clientX, clientY);
             throttleTimeout.current = setTimeout(() => {
                 throttleTimeout.current = null;
-            }, 30); // Throttle to every 30ms
+            }, 50); // Throttle to every 50ms
         }
     };
 

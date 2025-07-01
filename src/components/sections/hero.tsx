@@ -4,9 +4,15 @@
 import React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 type HeroSectionProps = {
   scrollToSection: (id: string) => void;
+};
+
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
 };
 
 const HeroSection: React.FC<HeroSectionProps> = ({ scrollToSection }) => {
@@ -25,17 +31,35 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollToSection }) => {
       </div>
 
       <div className="z-10 text-center max-w-3xl mx-auto">
-        <h1 className="text-4xl md:text-6xl font-headline font-extrabold mb-4 leading-tight">
+        <motion.h1 
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-4xl md:text-6xl font-headline font-extrabold mb-4 leading-tight"
+        >
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
             Ritesh
           </span>
-        </h1>
-        <p className="text-xl md:text-2xl text-foreground/80 font-light">
+        </motion.h1>
+        <motion.p 
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="text-xl md:text-2xl text-foreground/80 font-light"
+        >
           Aspiring Data Scientist | Analytical Problem Solver | Technology Enthusiast
-        </p>
+        </motion.p>
       </div>
 
-      <div className="z-10 flex flex-col sm:flex-row gap-4 mt-10">
+      <motion.div 
+        variants={fadeInUp}
+        initial="initial"
+        animate="animate"
+        transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+        className="z-10 flex flex-col sm:flex-row gap-4 mt-10"
+      >
         <Button
           onClick={() => scrollToSection('projects')}
           className="jelly-btn glass-effect rounded-full shadow-lg shadow-primary/30 border-primary/50 text-base py-6 px-8 hover:bg-primary hover:text-primary-foreground"
@@ -49,7 +73,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ scrollToSection }) => {
         >
           Download Resume
         </Button>
-      </div>
+      </motion.div>
     </section>
   );
 };

@@ -33,7 +33,6 @@ export default function HomePage() {
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [isProfilePicUploading, setIsProfilePicUploading] = useState(false);
   const [isResumeUploading, setIsResumeUploading] = useState(false);
 
   const [email, setEmail] = useState('');
@@ -167,33 +166,6 @@ export default function HomePage() {
     });
   }, [debouncedSave]);
   
-  const handleProfileImageUpload = async (file: File) => {
-    if (!editMode || isProfilePicUploading) return;
-    if (!file) {
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'No file selected.'});
-        return;
-    }
-
-    setIsProfilePicUploading(true);
-    const { id: toastId, update } = toast({ description: "Uploading picture..." });
-
-    try {
-        const downloadURL = await uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
-        handleAboutUpdate('imageUrl', downloadURL);
-        update({ id: toastId, description: "Profile picture updated successfully." });
-    } catch (error: any) {
-        console.error("Profile image upload failed:", error);
-        update({ 
-            id: toastId,
-            variant: 'destructive', 
-            title: 'Upload Failed', 
-            description: error.message || 'Could not upload picture. Please check the console.' 
-        });
-    } finally {
-        setIsProfilePicUploading(false);
-    }
-  };
-  
   const handleResumeUpload = async (file: File) => {
     if (!editMode || isResumeUploading) return;
     if (!file) {
@@ -234,7 +206,7 @@ export default function HomePage() {
   const handleViewerMode = () => {
     setBatAnimation(true);
     document.documentElement.classList.add('viewer-mode-active');
-    setTimeout(() => setShowLogin(false), 1000); 
+    setTimeout(() => setShowLogin(false), 1200); 
   };
   
   const handleLogout = async () => {

@@ -36,7 +36,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({ item, index, editMode, 
       ref={ref}
       initial={{ opacity: 0, x: initialX }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : initialX }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
       className="relative pl-8 sm:pl-0"
     >
       <div className="absolute left-0 sm:left-1/2 top-1 h-4 w-4 bg-primary rounded-full -translate-x-1/2 border-4 border-background"></div>
