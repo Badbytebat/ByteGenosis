@@ -1,21 +1,36 @@
 
 "use client";
 
+import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VenetianMask } from "lucide-react";
+import { VenetianMask, Upload } from "lucide-react";
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import type { AboutData } from '@/lib/types';
+import { Button } from '../ui/button';
 
 type Props = {
   data: AboutData;
   editMode: boolean;
   onUpdate: (field: keyof AboutData, value: string) => void;
+  onImageUpload: (file: File) => void;
 };
 
-const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate }) => {
-    // Hardcode the image URL to guarantee it shows up, bypassing database issues and 404 errors.
-    const profileImageUrl = "https://placehold.co/400x500.png";
+const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, onImageUpload }) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            onImageUpload(file);
+        }
+    };
+
+    const handleUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+    
+    const profileImageUrl = data.imageUrl || "https://placehold.co/400x500.png";
 
     return (
         <section id="about" className="py-20 px-4 sm:px-6 lg:px-8">
@@ -28,7 +43,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate }) => {
                 </p>
             </div>
             <div className="max-w-5xl mx-auto grid md:grid-cols-5 gap-8 items-center">
-                <div className="md:col-span-2 relative">
+                <div className="md:col-span-2 relative group">
                     <img
                         src={profileImageUrl}
                         data-ai-hint="professional portrait"
@@ -37,6 +52,25 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate }) => {
                         height="500"
                         className="object-cover w-full h-auto rounded-lg border-2 border-accent/20 shadow-lg shadow-accent/10"
                     />
+                     {editMode && (
+                        <>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                                accept="image/png, image/jpeg, image/gif"
+                            />
+                            <Button 
+                                onClick={handleUploadClick}
+                                variant="outline"
+                                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/70 hover:bg-background"
+                            >
+                                <Upload className="mr-2 h-4 w-4" />
+                                Change Picture
+                            </Button>
+                        </>
+                    )}
                 </div>
                 <div className="md:col-span-3">
                     <Card className="bg-card/50 border-primary/20 p-6 rounded-lg transition-all duration-300 hover:shadow-lg">

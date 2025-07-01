@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { PortfolioData, Qualification, HeaderData, AboutData } from '@/lib/types';
 import { defaultData } from '@/lib/data';
 import { getPortfolioData, savePortfolioData } from '@/lib/firestore';
@@ -165,6 +165,20 @@ export default function HomePage() {
     });
   }, [debouncedSave]);
   
+  const handleProfileImageUpload = async (file: File) => {
+    if (!editMode || !file) return;
+
+    const { id: toastId, update } = toast({ description: "Uploading profile picture..." });
+    try {
+        const downloadURL = await uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
+        handleAboutUpdate('imageUrl', downloadURL);
+        update({ id: toastId, description: "Profile picture uploaded successfully." });
+    } catch (error) {
+        console.error("Profile image upload error:", error);
+        update({ id: toastId, variant: 'destructive', title: 'Upload failed', description: 'Could not upload profile picture.' });
+    }
+  };
+  
   const handleResumeUpload = async (file: File) => {
     if (!editMode || !file) return;
 
@@ -266,6 +280,7 @@ export default function HomePage() {
           data={data.about}
           editMode={editMode}
           onUpdate={handleAboutUpdate}
+          onImageUpload={handleProfileImageUpload}
         />
         <ExperienceSection 
             data={data.experience} 
