@@ -34,7 +34,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
       <Card className="relative z-10 w-full max-w-md bg-card/80 backdrop-blur-lg border-primary/20 shadow-xl shadow-primary/10">
         <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl flex items-center justify-center gap-2">
-            🦇 Welcome to the Batcave
+            Welcome to Your Portfolio
           </CardTitle>
           <CardDescription>
             Please sign in to access edit mode.

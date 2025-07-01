@@ -7,7 +7,7 @@ import './globals.css';
 import './animations.css';
 
 export const metadata: Metadata = {
-  title: 'Batfolio',
+  title: "Ritesh's Portfolio",
   description: 'A personal portfolio',
 };
 

@@ -69,7 +69,7 @@ export default function HomePage() {
       if (user) {
         setEditMode(true);
         setShowLogin(false);
-        toast({ title: "Welcome, Bat!", description: "Edit mode activated." });
+        toast({ title: "Welcome!", description: "Edit mode activated." });
         document.documentElement.classList.remove('viewer-mode-active');
       } else {
         setEditMode(false);
@@ -236,7 +236,7 @@ export default function HomePage() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="ml-4 text-xl">Loading Batcave...</p>
+        <p className="ml-4 text-xl">Loading Portfolio...</p>
       </div>
     );
   }
