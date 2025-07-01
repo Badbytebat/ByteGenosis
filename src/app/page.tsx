@@ -33,7 +33,8 @@ export default function HomePage() {
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isProfilePicUploading, setIsProfilePicUploading] = useState(false);
+  const [isResumeUploading, setIsResumeUploading] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -168,37 +169,40 @@ export default function HomePage() {
   }, [debouncedSave]);
   
   const handleProfileImageUpload = async (file: File) => {
-    if (!editMode || isUploading) return;
+    if (!editMode || isProfilePicUploading) return;
     if (!file) {
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'No file selected.'});
         return;
     }
 
-    setIsUploading(true);
+    setIsProfilePicUploading(true);
+    const { id: toastId, update } = toast({ description: "Uploading picture..." });
+
     try {
         const downloadURL = await uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
         handleAboutUpdate('imageUrl', downloadURL);
-        toast({ description: "Profile picture updated successfully."});
+        update({ id: toastId, description: "Profile picture updated successfully." });
     } catch (error: any) {
         console.error("Profile image upload failed:", error);
-        toast({ 
+        update({ 
+            id: toastId,
             variant: 'destructive', 
             title: 'Upload Failed', 
-            description: error.message || 'An unknown error occurred. Please check the console.' 
+            description: error.message || 'Could not upload picture. Please check the console.' 
         });
     } finally {
-        setIsUploading(false);
+        setIsProfilePicUploading(false);
     }
   };
   
   const handleResumeUpload = async (file: File) => {
-    if (!editMode || isUploading) return;
+    if (!editMode || isResumeUploading) return;
     if (!file) {
         toast({ variant: 'destructive', title: 'Upload Failed', description: 'No file selected.'});
         return;
     }
 
-    setIsUploading(true);
+    setIsResumeUploading(true);
     const { id: toastId, update } = toast({ description: "Uploading resume..." });
 
     try {
@@ -218,7 +222,7 @@ export default function HomePage() {
             description: error.message || 'Could not upload resume. Please check the console.' 
         });
     } finally {
-        setIsUploading(false);
+        setIsResumeUploading(false);
     }
   };
 
@@ -307,7 +311,7 @@ export default function HomePage() {
           editMode={editMode}
           onUpdate={handleAboutUpdate}
           onImageUpload={handleProfileImageUpload}
-          isUploading={isUploading}
+          isUploading={isProfilePicUploading}
         />
         <ExperienceSection 
             data={data.experience} 
@@ -348,7 +352,7 @@ export default function HomePage() {
             resumeUrl={data.resumeUrl}
             editMode={editMode}
             onUpload={handleResumeUpload}
-            isUploading={isUploading}
+            isUploading={isResumeUploading}
         />
         <ContactSection
             data={data.contact}
