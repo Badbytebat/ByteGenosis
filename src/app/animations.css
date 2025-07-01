@@ -26,24 +26,27 @@
   transform: translate(-50%, -50%) scale(1.5);
 }
 
-/* SHATTER ANIMATION */
-.glass-shard {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  will-change: transform, opacity;
-  animation: shatter-fall 1s forwards cubic-bezier(0.2, 1, 0.3, 1);
+/* DIGITAL RAIN ANIMATION */
+@keyframes digital-rain-fall {
+  from {
+    transform: translateY(-10vh);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
 }
 
-@keyframes shatter-fall {
-  0% {
-    opacity: 1;
-    transform: translateY(0) rotate(0deg) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(100vh) rotate(720deg) scale(0.5);
-  }
+.digital-rain-character {
+  position: fixed;
+  font-family: 'Space Grotesk', monospace;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 51; /* Above the login card and its glass effect */
+  animation: digital-rain-fall linear forwards;
+  color: hsl(var(--primary));
+  text-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent));
 }
 
 /* BAT FLYBY ANIMATION */
@@ -90,10 +93,10 @@ html.viewer-mode-active, html.viewer-mode-active * {
 .matrix-bit {
   position: fixed;
   transform: translate(-50%, -50%); /* Center the character on the cursor */
-  color: #39ff14; /* Neon green */
+  color: hsl(var(--primary)); /* Use theme primary color */
   font-family: 'monospace';
   font-size: 1.1rem;
-  text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14;
+  text-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent)); /* Use theme accent color for glow */
   pointer-events: none;
   z-index: 9999;
   animation: matrix-fade 400ms linear forwards;

@@ -40,7 +40,7 @@ export default function HomePage() {
   const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(true);
   
-  const [shatterActive, setShatterActive] = useState(false);
+  const [rainActive, setRainActive] = useState(false);
   const [batAnimation, setBatAnimation] = useState(false);
 
   const { toast } = useToast();
@@ -233,7 +233,7 @@ export default function HomePage() {
   };
 
   const handleViewerMode = () => {
-    setShatterActive(true);
+    setRainActive(true);
     setBatAnimation(true);
     document.documentElement.classList.add('viewer-mode-active');
     setTimeout(() => setShowLogin(false), 1000); 
@@ -276,7 +276,7 @@ export default function HomePage() {
         setPassword={setPassword}
         handleSignIn={handleSignIn}
         handleViewerMode={handleViewerMode}
-        shatterActive={shatterActive}
+        rainActive={rainActive}
         batAnimation={batAnimation}
         isFirebaseConfigured={isFirebaseConfigured}
       />
@@ -352,7 +352,7 @@ export default function HomePage() {
             resumeUrl={data.resumeUrl}
             editMode={editMode}
             onUpload={handleResumeUpload}
-            isUploading={isResumeUploading}
+            isUploading={isUploading}
         />
         <ContactSection
             data={data.contact}
