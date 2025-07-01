@@ -1,66 +1,57 @@
-
 'use client';
 import { storage } from './firebase';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const UPLOAD_TIMEOUT = 30000; // 30 seconds
 
-export const uploadFile = (file: File, path: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    if (!file) {
-      return reject(new Error('No file provided for upload.'));
+// A helper promise that rejects after a certain time
+const timeout = (ms: number, message: string): Promise<never> => {
+    return new Promise((_, reject) => {
+        setTimeout(() => reject(new Error(message)), ms);
+    });
+};
+
+export const uploadFile = async (file: File, path: string): Promise<string> => {
+  if (!file) {
+    throw new Error('No file provided for upload.');
+  }
+
+  const storageRef = ref(storage, path);
+
+  try {
+    // The actual upload operation
+    const uploadOperation = async () => {
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+    };
+    
+    // Race the upload against a timeout
+    const downloadURL = await Promise.race([
+        uploadOperation(),
+        timeout(UPLOAD_TIMEOUT, `Upload timed out after ${UPLOAD_TIMEOUT / 1000} seconds. This could be due to a network issue or Firebase Storage security rules.`)
+    ]);
+
+    return downloadURL;
+
+  } catch (error: any) {
+    console.error("Detailed upload error:", error);
+    
+    // Provide more specific error messages based on Firebase error codes
+    switch (error.code) {
+      case 'storage/unauthorized':
+        throw new Error('Permission denied. Please check your Firebase Storage security rules.');
+      case 'storage/unauthenticated':
+        throw new Error('Authentication required. Please sign in again.');
+      case 'storage/object-not-found':
+          throw new Error('File not found. This can happen if the upload was interrupted.');
+      case 'storage/quota-exceeded':
+        throw new Error('Storage quota exceeded. Please contact the site administrator.');
+      case 'storage/unknown':
+        throw new Error('An unknown storage error occurred. Please check your network connection.');
+      default:
+        // Re-throw the original error if it's not a known Firebase error (like our timeout)
+        throw error;
     }
-
-    const storageRef = ref(storage, path);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    const timeoutId = setTimeout(() => {
-        uploadTask.cancel();
-        reject(new Error('Upload timed out after 30 seconds. Please try again.'));
-    }, UPLOAD_TIMEOUT);
-
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        // Observe state change events such as progress, pause, and resume
-        // Can be used to display progress bar
-      },
-      (error) => {
-        // Handle unsuccessful uploads
-        clearTimeout(timeoutId);
-        console.error("Detailed upload error:", error);
-        
-        switch (error.code) {
-          case 'storage/unauthorized':
-            reject(new Error('Permission denied. Please check your Storage security rules.'));
-            break;
-          case 'storage/unauthenticated':
-            reject(new Error('Authentication required. Please sign in again.'));
-            break;
-          case 'storage/canceled':
-            // The timeout handler will reject with a more specific message.
-            // No need to reject again here unless it was a manual cancellation.
-            break;
-          case 'storage/quota-exceeded':
-            reject(new Error('Storage quota exceeded. Please contact the site administrator.'));
-            break;
-          case 'storage/unknown':
-            reject(new Error('An unknown storage error occurred. Please check the network connection.'));
-            break;
-          default:
-            reject(new Error(`An unknown error occurred during upload: ${error.message}`));
-        }
-      },
-      async () => {
-        // Handle successful uploads on complete
-        clearTimeout(timeoutId);
-        try {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(downloadURL);
-        } catch (downloadError) {
-          reject(new Error('File uploaded successfully, but failed to get download URL.'));
-        }
-      }
-    );
-  });
+  }
 };
