@@ -33,7 +33,7 @@ export default function HomePage() {
   const [initialDataLoading, setInitialDataLoading] = useState(true);
   const [showLogin, setShowLogin] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [isUploadingProfile, setIsUploadingProfile] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -168,32 +168,42 @@ export default function HomePage() {
   }, [debouncedSave]);
   
   const handleProfileImageUpload = async (file: File) => {
-    if (!editMode || !file || isUploadingProfile) return;
+    if (!editMode || !file || isUploading) return;
 
-    setIsUploadingProfile(true);
+    setIsUploading(true);
+    const uploadPromise = uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
+    const timeoutPromise = new Promise<string>((_, reject) => 
+        setTimeout(() => reject(new Error('Upload timed out after 30 seconds.')), 30000)
+    );
+
     try {
-        const downloadURL = await uploadFile(file, `profile-images/${Date.now()}_${file.name}`);
+        const downloadURL = await Promise.race([uploadPromise, timeoutPromise]);
         handleAboutUpdate('imageUrl', downloadURL);
         toast({ description: "Profile picture updated successfully."});
     } catch (error: any) {
         console.error("Profile image upload failed:", error);
-        // Use the specific error message from the uploadFile function
         toast({ 
             variant: 'destructive', 
             title: 'Upload Failed', 
             description: error.message || 'An unknown error occurred. Please check the console.' 
         });
     } finally {
-        setIsUploadingProfile(false);
+        setIsUploading(false);
     }
   };
   
   const handleResumeUpload = async (file: File) => {
-    if (!editMode || !file) return;
+    if (!editMode || !file || isUploading) return;
 
+    setIsUploading(true);
     const { id: toastId, update } = toast({ description: "Uploading resume..." });
+    const uploadPromise = uploadFile(file, `resumes/resume_${Date.now()}_${file.name}`);
+    const timeoutPromise = new Promise<string>((_, reject) => 
+        setTimeout(() => reject(new Error('Upload timed out after 30 seconds.')), 30000)
+    );
+
     try {
-        const downloadURL = await uploadFile(file, `resumes/resume_${Date.now()}_${file.name}`);
+        const downloadURL = await Promise.race([uploadPromise, timeoutPromise]);
         setData(prevData => {
             const newData = { ...prevData, resumeUrl: downloadURL };
             debouncedSave(newData);
@@ -208,6 +218,8 @@ export default function HomePage() {
             title: 'Upload Failed', 
             description: error.message || 'Could not upload resume. Please check the console.' 
         });
+    } finally {
+        setIsUploading(false);
     }
   };
 
@@ -296,7 +308,7 @@ export default function HomePage() {
           editMode={editMode}
           onUpdate={handleAboutUpdate}
           onImageUpload={handleProfileImageUpload}
-          isUploading={isUploadingProfile}
+          isUploading={isUploading}
         />
         <ExperienceSection 
             data={data.experience} 
@@ -337,6 +349,7 @@ export default function HomePage() {
             resumeUrl={data.resumeUrl}
             editMode={editMode}
             onUpload={handleResumeUpload}
+            isUploading={isUploading}
         />
         <ContactSection
             data={data.contact}

@@ -3,15 +3,16 @@
 
 import React, { useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Download, Upload } from "lucide-react";
+import { Download, Upload, Loader2 } from "lucide-react";
 
 type Props = {
   resumeUrl: string;
   editMode: boolean;
   onUpload: (file: File) => void;
+  isUploading: boolean;
 };
 
-const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload }) => {
+const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload, isUploading }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,10 +50,15 @@ const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload }) => {
                 onChange={handleFileChange}
                 className="hidden"
                 accept=".pdf"
+                disabled={isUploading}
               />
-              <Button onClick={handleUploadClick} size="lg" variant="outline" className="rounded-full py-6 px-8">
-                <Upload className="w-5 h-5 mr-3"/>
-                Upload New
+              <Button onClick={handleUploadClick} size="lg" variant="outline" className="rounded-full py-6 px-8" disabled={isUploading}>
+                {isUploading ? (
+                  <Loader2 className="w-5 h-5 mr-3 animate-spin"/>
+                ) : (
+                  <Upload className="w-5 h-5 mr-3"/>
+                )}
+                {isUploading ? 'Uploading...' : 'Upload New'}
               </Button>
             </div>
           )}
