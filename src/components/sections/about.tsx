@@ -33,12 +33,12 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
         <motion.section 
             ref={ref}
             id="about" 
-            className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+            className="py-20 overflow-hidden"
             initial={{ opacity: 0, x: -100 }}
             animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : -100 }}
             transition={transition}
         >
-            <div className="max-w-4xl mx-auto text-center mb-12">
+            <div className="max-w-4xl mx-auto text-center mb-12 px-4 sm:px-6 lg:px-8">
                 <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
                     About Me
                 </h2>
@@ -46,7 +46,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
                     {darkMode ? "A glimpse into the mind behind the cowl." : "A brief introduction to my professional background."}
                 </p>
             </div>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <Card className={cn(
                     "p-6 rounded-lg transition-all duration-300",
                     darkMode 

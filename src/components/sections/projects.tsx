@@ -107,9 +107,9 @@ const ProjectsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntr
     <motion.section 
       ref={ref}
       id="projects" 
-      className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="py-20 overflow-hidden"
     >
-      <div className="max-w-4xl mx-auto text-center mb-12">
+      <div className="max-w-4xl mx-auto text-center mb-12 px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           { darkMode ? "Case Files" : "Projects"}
         </h2>
@@ -118,7 +118,7 @@ const ProjectsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntr
         </p>
       </div>
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
         {data.map((item, index) => (
           <AnimatedProjectCard 
             key={item.id} 

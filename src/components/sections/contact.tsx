@@ -128,12 +128,12 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
     <motion.section 
       ref={ref}
       id="contact" 
-      className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="py-20 overflow-hidden"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
       transition={transition}
     >
-      <div className="max-w-4xl mx-auto text-center mb-12">
+      <div className="max-w-4xl mx-auto text-center mb-12 px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           Contact Me
         </h2>
@@ -141,7 +141,7 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
           {darkMode ? "Have a question or want to work together? Send a signal." : "Let's connect. I'm available for new opportunities."}
         </p>
       </div>
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
         {data.map((method, index) => (
           <AnimatedContactCard
             key={method.id}

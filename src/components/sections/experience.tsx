@@ -100,8 +100,8 @@ type Props = {
 
 const ExperienceSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry, darkMode }) => {
   return (
-    <section id="experience" className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="max-w-4xl mx-auto text-center mb-12">
+    <section id="experience" className="py-20 overflow-hidden">
+      <div className="max-w-4xl mx-auto text-center mb-12 px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           Work Experience
         </h2>
@@ -110,7 +110,7 @@ const ExperienceSection: React.FC<Props> = ({ data, editMode, updateEntry, addEn
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-8 relative">
+      <div className="max-w-4xl mx-auto space-y-8 relative px-4 sm:px-6 lg:px-8">
         <div className="absolute left-0 sm:left-1/2 top-0 h-full w-0.5 bg-border -translate-x-1/2"></div>
         {data.map((item, index) => (
            <ExperienceItem 

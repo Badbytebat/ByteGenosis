@@ -36,12 +36,12 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
     <motion.section 
       ref={ref}
       id="skills" 
-      className="py-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+      className="py-20 overflow-hidden"
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : 100 }}
       transition={transition}
     >
-      <div className="max-w-4xl mx-auto text-center mb-12">
+      <div className="max-w-4xl mx-auto text-center mb-12 px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-4xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
           { darkMode ? "My Arsenal" : "My Skills" }
         </h2>
@@ -50,7 +50,7 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
         </p>
       </div>
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Card className={cn(
           "p-6 sm:p-10 transition-all duration-300",
           darkMode
