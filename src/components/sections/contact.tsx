@@ -141,7 +141,7 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
           {darkMode ? "Have a question or want to work together? Send a signal." : "Let's connect. I'm available for new opportunities."}
         </p>
       </div>
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {data.map((method, index) => (
           <AnimatedContactCard
             key={method.id}

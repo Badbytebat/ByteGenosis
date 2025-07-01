@@ -276,100 +276,102 @@ export default function HomePage() {
           />
         </motion.div>
       ) : (
-        <motion.div
-          key="portfolio"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
-          className={`flex min-h-screen flex-col ${darkMode ? 'dark' : 'light'}`}
-        >
-          {!editMode && <MatrixCursor darkMode={darkMode} />}
-          <Header 
-            darkMode={darkMode}
-            setDarkMode={setDarkMode}
-            scrollToSection={scrollToSection}
-            headerData={data.header}
-            editMode={editMode}
-            onUpdate={handleHeaderUpdate}
-          />
-          
-          {editMode && (
-            <div className="fixed bottom-4 right-4 z-50">
-              <Button onClick={handleLogout}>Logout &amp; Exit Edit Mode</Button>
-            </div>
-          )}
-
-          <main className="flex flex-1 flex-col bg-background">
-            <HeroSection 
-                data={data.hero}
-                editMode={editMode}
-                onUpdate={handleHeroUpdate}
-                scrollToSection={scrollToSection} 
-                darkMode={darkMode}
-            />
-            <AboutSection 
-              data={data.about}
-              editMode={editMode}
-              onUpdate={handleAboutUpdate}
+        <div className={`flex min-h-screen flex-col bg-background ${darkMode ? 'dark' : 'light'}`}>
+          <motion.div
+            key="portfolio"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
+            className="flex flex-1 flex-col"
+          >
+            {!editMode && <MatrixCursor darkMode={darkMode} />}
+            <Header 
               darkMode={darkMode}
+              setDarkMode={setDarkMode}
+              scrollToSection={scrollToSection}
+              headerData={data.header}
+              editMode={editMode}
+              onUpdate={handleHeaderUpdate}
             />
-            <ExperienceSection 
-                data={data.experience} 
-                editMode={editMode} 
-                updateEntry={handleUpdate as any}
-                addEntry={handleAdd as any}
-                deleteEntry={handleDelete as any}
-                darkMode={darkMode}
-            />
-            <SkillsSection 
-                data={data.skills} 
+            
+            {editMode && (
+              <div className="fixed bottom-4 right-4 z-50">
+                <Button onClick={handleLogout}>Logout &amp; Exit Edit Mode</Button>
+              </div>
+            )}
+
+            <main className="flex-1">
+              <HeroSection 
+                  data={data.hero}
+                  editMode={editMode}
+                  onUpdate={handleHeroUpdate}
+                  scrollToSection={scrollToSection} 
+                  darkMode={darkMode}
+              />
+              <AboutSection 
+                data={data.about}
                 editMode={editMode}
-                updateEntry={handleUpdate as any}
-                addEntry={handleAdd as any}
-                deleteEntry={handleDelete as any}
+                onUpdate={handleAboutUpdate}
                 darkMode={darkMode}
-            />
-            <ProjectsSection 
-                data={data.projects} 
-                editMode={editMode} 
-                updateEntry={handleUpdate as any}
-                addEntry={handleAdd as any}
-                deleteEntry={handleDelete as any}
-                darkMode={darkMode}
-            />
-            <EducationSection 
-                data={educationItems} 
-                editMode={editMode} 
-                updateEntry={handleUpdate as any}
-                addEntry={handleAdd as any}
-                deleteEntry={handleDelete as any}
-                darkMode={darkMode}
-            />
-            <CertificationsSection 
-                data={certificationItems} 
-                editMode={editMode} 
-                updateEntry={handleUpdate as any}
-                addEntry={handleAdd as any}
-                deleteEntry={handleDelete as any}
-                darkMode={darkMode}
-            />
-            <ResumeSection 
-                resumeUrl={data.resumeUrl}
-                editMode={editMode}
-                onUpload={handleResumeUpload}
-                isUploading={isResumeUploading}
-                darkMode={darkMode}
-            />
-            <ContactSection
-                data={data.contact}
-                editMode={editMode}
-                updateEntry={handleUpdate as any}
-                addEntry={handleAdd as any}
-                deleteEntry={handleDelete as any}
-                darkMode={darkMode}
-            />
-          </main>
-          <Footer />
-        </motion.div>
+              />
+              <ExperienceSection 
+                  data={data.experience} 
+                  editMode={editMode} 
+                  updateEntry={handleUpdate as any}
+                  addEntry={handleAdd as any}
+                  deleteEntry={handleDelete as any}
+                  darkMode={darkMode}
+              />
+              <SkillsSection 
+                  data={data.skills} 
+                  editMode={editMode}
+                  updateEntry={handleUpdate as any}
+                  addEntry={handleAdd as any}
+                  deleteEntry={handleDelete as any}
+                  darkMode={darkMode}
+              />
+              <ProjectsSection 
+                  data={data.projects} 
+                  editMode={editMode} 
+                  updateEntry={handleUpdate as any}
+                  addEntry={handleAdd as any}
+                  deleteEntry={handleDelete as any}
+                  darkMode={darkMode}
+              />
+              <EducationSection 
+                  data={educationItems} 
+                  editMode={editMode} 
+                  updateEntry={handleUpdate as any}
+                  addEntry={handleAdd as any}
+                  deleteEntry={handleDelete as any}
+                  darkMode={darkMode}
+              />
+              <CertificationsSection 
+                  data={certificationItems} 
+                  editMode={editMode} 
+                  updateEntry={handleUpdate as any}
+                  addEntry={handleAdd as any}
+                  deleteEntry={handleDelete as any}
+                  darkMode={darkMode}
+              />
+              <ResumeSection 
+                  resumeUrl={data.resumeUrl}
+                  editMode={editMode}
+                  onUpload={handleResumeUpload}
+                  isUploading={isResumeUploading}
+                  darkMode={darkMode}
+              />
+              <ContactSection
+                  data={data.contact}
+                  editMode={editMode}
+                  updateEntry={handleUpdate as any}
+                  addEntry={handleAdd as any}
+                  deleteEntry={handleDelete as any}
+                  darkMode={darkMode}
+              />
+            </main>
+            <Footer />
+          </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

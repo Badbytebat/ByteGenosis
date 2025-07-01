@@ -49,7 +49,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
         )}
       </div>
 
-      <div className="relative z-10 text-center p-6">
+      <div className="relative z-10 text-center px-6">
         <div className="max-w-4xl mx-auto">
           {editMode ? (
             <div className="space-y-4">
