@@ -1,6 +1,9 @@
 import type { PortfolioData } from './types';
 
 export const defaultData: PortfolioData = {
+  header: {
+    logoText: "R",
+  },
   experience: [
     {
       id: 1,
@@ -155,5 +158,29 @@ export const defaultData: PortfolioData = {
       description: "Skills: Microsoft Fabric, Data Analysis",
       link: "https://learn.microsoft.com/api/achievements/share/en-us/Thebadbat-3030/FMZWPWRX?sharingId=B002C207BF8AF792"
     }
-  ]
+  ],
+  contact: [
+    {
+        id: 1,
+        icon: "Mail",
+        label: "Email",
+        value: "riteshmdhr@gmail.com",
+        href: "mailto:riteshmdhr@gmail.com"
+    },
+    {
+        id: 2,
+        icon: "Linkedin",
+        label: "LinkedIn",
+        value: "linkedin.com/in/batman",
+        href: "#"
+    },
+    {
+        id: 3,
+        icon: "Github",
+        label: "GitHub",
+        value: "github.com/batman",
+        href: "#"
+    }
+  ],
+  resumeUrl: "/resume.pdf",
 };

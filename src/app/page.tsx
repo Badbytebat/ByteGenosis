@@ -2,12 +2,13 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { PortfolioData, Qualification } from '@/lib/types';
+import type { PortfolioData, Qualification, HeaderData } from '@/lib/types';
 import { defaultData } from '@/lib/data';
 import { getPortfolioData, savePortfolioData } from '@/lib/firestore';
 import { useAuth } from '@/context/auth-provider';
-import { useToast } from '@/hooks/use-toast';
+import { useToast, toast } from '@/hooks/use-toast';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
+import { uploadFile } from '@/lib/storage';
 
 import LoginScreen from '@/components/login-screen';
 import Header from '@/components/layout/header';
@@ -27,7 +28,6 @@ import { Button } from '@/components/ui/button';
 
 export default function HomePage() {
   const { user, loading: authLoading, signIn, signOut } = useAuth();
-  const { toast } = useToast();
   
   const [data, setData] = useState<PortfolioData>(defaultData);
   const [initialDataLoading, setInitialDataLoading] = useState(true);
@@ -126,6 +126,9 @@ export default function HomePage() {
             case 'qualifications':
                 newItem = { id: newId, type: itemType, title: 'New Entry', institution: 'Institution', duration: 'Year', description: '...' };
                 break;
+            case 'contact':
+                newItem = { id: newId, icon: 'Mail', label: 'New Contact', value: 'new@contact.com', href: '#' };
+                break;
         }
 
         const newData = { ...prevData, [section]: [...(sectionData || []), newItem] };
@@ -143,6 +146,32 @@ export default function HomePage() {
         return newData;
     });
   }, [debouncedSave]);
+  
+  const handleHeaderUpdate = useCallback((field: keyof HeaderData, value: string) => {
+    setData(prevData => {
+        const newHeader = { ...prevData.header, [field]: value };
+        const newData = { ...prevData, header: newHeader };
+        debouncedSave(newData);
+        return newData;
+    });
+  }, [debouncedSave]);
+  
+  const handleResumeUpload = async (file: File) => {
+    if (!editMode || !file) return;
+
+    const { id: toastId, update } = toast({ description: "Uploading resume..." });
+    try {
+        const downloadURL = await uploadFile(file, `resumes/resume_${Date.now()}_${file.name}`);
+        setData(prevData => {
+            const newData = { ...prevData, resumeUrl: downloadURL };
+            debouncedSave(newData);
+            return newData;
+        });
+        update({ description: "Resume uploaded successfully." });
+    } catch (error) {
+        update({ variant: 'destructive', title: 'Upload failed', description: 'Could not upload resume.' });
+    }
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,6 +240,9 @@ export default function HomePage() {
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         scrollToSection={scrollToSection}
+        headerData={data.header}
+        editMode={editMode}
+        onUpdate={handleHeaderUpdate}
       />
       
       {editMode && (
@@ -257,8 +289,18 @@ export default function HomePage() {
             addEntry={handleAdd as any}
             deleteEntry={handleDelete as any}
         />
-        <ResumeSection />
-        <ContactSection />
+        <ResumeSection 
+            resumeUrl={data.resumeUrl}
+            editMode={editMode}
+            onUpload={handleResumeUpload}
+        />
+        <ContactSection
+            data={data.contact}
+            editMode={editMode}
+            updateEntry={handleUpdate as any}
+            addEntry={handleAdd as any}
+            deleteEntry={handleDelete as any}
+        />
       </main>
       <Footer />
     </>

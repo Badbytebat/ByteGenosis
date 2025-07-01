@@ -16,10 +16,13 @@ export const getPortfolioData = async (): Promise<PortfolioData> => {
       // Basic validation to merge default data structure with fetched data
       const fetchedData = docSnap.data();
       return {
+        header: fetchedData.header || defaultData.header,
         experience: fetchedData.experience || defaultData.experience,
         skills: fetchedData.skills || defaultData.skills,
         projects: fetchedData.projects || defaultData.projects,
         qualifications: fetchedData.qualifications || defaultData.qualifications,
+        contact: fetchedData.contact || defaultData.contact,
+        resumeUrl: fetchedData.resumeUrl || defaultData.resumeUrl,
       };
     } else {
       // If the document doesn't exist, just return the default data.

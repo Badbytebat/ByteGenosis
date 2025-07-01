@@ -30,9 +30,24 @@ export interface Qualification {
   link?: string;
 }
 
+export interface ContactMethod {
+  id: number;
+  icon: string;
+  label: string;
+  value: string;
+  href: string;
+}
+
+export interface HeaderData {
+  logoText: string;
+}
+
 export interface PortfolioData {
+  header: HeaderData;
   experience: Experience[];
   skills: Skill[];
   projects: Project[];
   qualifications: Qualification[];
+  contact: ContactMethod[];
+  resumeUrl: string;
 }
