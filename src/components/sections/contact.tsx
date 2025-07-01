@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +25,17 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
   
   const handleUpdate = (id: number, field: keyof ContactMethod, value: string) => {
     updateEntry('contact', id, field, value);
+  };
+  
+  const formatHref = (url: string = ''): string => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('mailto:')) {
+      return url;
+    }
+    if (url.includes('@')) {
+      return `mailto:${url}`;
+    }
+    return `https://${url}`;
   };
 
   return (
@@ -66,7 +76,7 @@ const ContactSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry
                   </Button>
                 </div>
               ) : (
-                <a href={method.href} target="_blank" rel="noopener noreferrer">
+                <a href={formatHref(method.href)} target="_blank" rel="noopener noreferrer">
                   <CardContent className="flex flex-col items-center justify-center gap-4">
                       <IconComponent className="w-10 h-10 text-accent"/>
                       <p className="font-bold text-lg">{method.label}</p>
