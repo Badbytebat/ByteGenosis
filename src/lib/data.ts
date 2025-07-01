@@ -6,10 +6,10 @@ export const defaultData: PortfolioData = {
   },
   about: {
     imageUrl: "https://placehold.co/400x500.png",
-    title: "Strategist by Day, Coder by Night",
-    description1: "I am an aspiring Data Scientist with a passion for uncovering insights from complex datasets and building intelligent solutions. My journey in technology began with a curiosity for how things work, which has since evolved into a dedicated pursuit of knowledge in machine learning, data analysis, and software development.",
-    description2: "Like the caped crusader, I am analytical, persistent, and resourceful. I thrive on challenges and am constantly honing my skills to tackle the next big problem. My goal is to leverage data to drive innovation and create a tangible impact.",
-    description3: "When I'm not crunching numbers or writing code, I explore new technologies, contribute to open-source projects, and enjoy a good cup of coffee.",
+    title: "Driven by Data, Defined by Results",
+    description1: "I am a dedicated and aspiring Data Scientist with a proven ability to extract and interpret complex datasets. My passion lies in transforming raw data into actionable insights that drive strategic business decisions and fuel innovation.",
+    description2: "My approach is defined by a persistent and analytical mindset, thriving on complex challenges that demand resourcefulness. I am committed to leveraging data to solve critical problems and deliver measurable impact.",
+    description3: "Beyond my core work, I am continually expanding my technical repertoire by exploring emerging technologies and contributing to the open-source community. I believe in continuous learning as a cornerstone of professional growth.",
   },
   experience: [
     {

@@ -5,15 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VenetianMask, Upload } from "lucide-react";
 import Image from "next/image";
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import type { AboutData } from '@/lib/types';
 
 type Props = {
   data: AboutData;
   editMode: boolean;
   onUpload: (file: File) => void;
+  onUpdate: (field: keyof AboutData, value: string) => void;
 };
 
-const AboutSection: React.FC<Props> = ({ data, editMode, onUpload }) => {
+const AboutSection: React.FC<Props> = ({ data, editMode, onUpload, onUpdate }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,19 +72,27 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpload }) => {
                         <CardHeader>
                              <CardTitle className="flex items-center gap-2 font-headline text-2xl">
                                 <VenetianMask className="text-primary"/>
-                                {data.title}
+                                {editMode ? (
+                                    <Input value={data.title} onChange={(e) => onUpdate('title', e.target.value)} className="text-2xl font-bold" />
+                                ) : (
+                                    data.title
+                                )}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-foreground/80">
-                            <p>
-                                {data.description1}
-                            </p>
-                            <p>
-                                {data.description2}
-                            </p>
-                            <p>
-                                {data.description3}
-                            </p>
+                           {editMode ? (
+                                <>
+                                    <Textarea value={data.description1} onChange={(e) => onUpdate('description1', e.target.value)} rows={4} />
+                                    <Textarea value={data.description2} onChange={(e) => onUpdate('description2', e.target.value)} rows={4} />
+                                    <Textarea value={data.description3} onChange={(e) => onUpdate('description3', e.target.value)} rows={3} />
+                                </>
+                           ) : (
+                                <>
+                                    <p>{data.description1}</p>
+                                    <p>{data.description2}</p>
+                                    <p>{data.description3}</p>
+                                </>
+                           )}
                         </CardContent>
                     </Card>
                 </div>

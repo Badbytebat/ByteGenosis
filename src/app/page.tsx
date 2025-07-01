@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { PortfolioData, Qualification, HeaderData } from '@/lib/types';
+import type { PortfolioData, Qualification, HeaderData, AboutData } from '@/lib/types';
 import { defaultData } from '@/lib/data';
 import { getPortfolioData, savePortfolioData } from '@/lib/firestore';
 import { useAuth } from '@/context/auth-provider';
@@ -155,6 +155,15 @@ export default function HomePage() {
         return newData;
     });
   }, [debouncedSave]);
+
+  const handleAboutUpdate = useCallback((field: keyof AboutData, value: string) => {
+    setData(prevData => {
+        const newAbout = { ...prevData.about, [field]: value };
+        const newData = { ...prevData, about: newAbout };
+        debouncedSave(newData);
+        return newData;
+    });
+  }, [debouncedSave]);
   
   const handleResumeUpload = async (file: File) => {
     if (!editMode || !file) return;
@@ -275,6 +284,7 @@ export default function HomePage() {
           data={data.about}
           editMode={editMode}
           onUpload={handleProfilePicUpload}
+          onUpdate={handleAboutUpdate}
         />
         <ExperienceSection 
             data={data.experience} 
