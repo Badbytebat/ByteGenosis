@@ -8,20 +8,39 @@ type MatrixCursorProps = {
 
 const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
   const animationFrameId = useRef<number>();
+  const lastTimestamp = useRef(0);
+  const cursorPos = useRef({ x: 0, y: 0 });
+
 
   useEffect(() => {
     // Logic for Dark Mode (Matrix Trail)
     if (darkMode) {
-      const cursorPos = { x: 0, y: 0 };
       const CHARS = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
-      let lastTimestamp = 0;
       const throttleInterval = 40; // ~25fps, a good balance between effect and performance
+
+       // Colors from the miui-glow-text gradient
+      const colors = [
+        'hsl(260, 60%, 65%)', // accent
+        '#ff6b6b',
+        '#feca57',
+        'hsl(228, 64%, 33%)', // primary
+        '#48dbfb',
+      ];
+      let colorIndex = 0;
 
       const createDarkParticle = (x: number, y: number) => {
         if (x === 0 && y === 0) return; // Don't draw particle at initial position
         const particle = document.createElement('span');
         particle.className = 'matrix-cursor-particle';
         particle.textContent = CHARS.charAt(Math.floor(Math.random() * CHARS.length));
+        
+        // Cycle through colors and apply them
+        const color = colors[colorIndex];
+        particle.style.color = color;
+        // Also apply the color to the text-shadow for a glow effect
+        particle.style.textShadow = `0 0 5px ${color}, 0 0 10px ${color}`;
+        colorIndex = (colorIndex + 1) % colors.length;
+
         particle.style.left = `${x}px`;
         particle.style.top = `${y}px`;
         document.body.appendChild(particle);
@@ -29,14 +48,13 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
       };
 
       const handleMouseMove = (e: MouseEvent) => {
-        cursorPos.x = e.clientX;
-        cursorPos.y = e.clientY;
+        cursorPos.current = { x: e.clientX, y: e.clientY };
       };
 
       const updateAnimation = (timestamp: number) => {
-        if (timestamp - lastTimestamp > throttleInterval) {
-          lastTimestamp = timestamp;
-          createDarkParticle(cursorPos.x, cursorPos.y);
+        if (timestamp - lastTimestamp.current > throttleInterval) {
+          lastTimestamp.current = timestamp;
+          createDarkParticle(cursorPos.current.x, cursorPos.current.y);
         }
         animationFrameId.current = requestAnimationFrame(updateAnimation);
       };
