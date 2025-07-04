@@ -21,7 +21,8 @@ const PixelArtBackground: React.FC<PixelArtBackgroundProps> = ({ darkMode }) => 
       }
     }));
 
-    const birds = Array.from({ length: 3 }, (_, i) => ({
+    const birdCount = Math.floor(Math.random() * 3) + 2; // Random number of birds (2-4)
+    const birds = Array.from({ length: birdCount }, (_, i) => ({
         id: `bird-${i}`,
         style: {
           top: `${10 + Math.random() * 20}%`,
