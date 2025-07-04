@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
         hostname: 'media.licdn.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'drive.google.com',
+        port: '',
+        pathname: '/**',
       }
     ],
   },

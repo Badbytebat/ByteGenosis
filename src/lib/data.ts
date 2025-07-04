@@ -10,7 +10,7 @@ export const defaultData: PortfolioData = {
     subtitle: "Aspiring Data Scientist | Analytical Problem Solver | Technology Enthusiast",
   },
   about: {
-    imageUrl: "/home/user/studio/public/New Project (2).png",
+    imageUrl: "https://placehold.co/400x500.png",
     title: "Driven by Data, Defined by Results",
     description1: "I am a dedicated and aspiring Data Scientist with a proven ability to extract and interpret complex datasets. My passion lies in transforming raw data into actionable insights that drive strategic business decisions and fuel innovation.",
     description2: "My approach is defined by a persistent and analytical mindset, thriving on complex challenges that demand resourcefulness. I am committed to leveraging data to solve critical problems and deliver measurable impact.",
