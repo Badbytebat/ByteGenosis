@@ -40,8 +40,6 @@ export default function HomePage() {
   const [password, setPassword] = useState('');
   const [darkMode, setDarkMode] = useState(true);
   
-  const [batAnimation, setBatAnimation] = useState(false);
-
   const { toast } = useToast();
   const isFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'CHANGEME';
 
@@ -214,7 +212,6 @@ export default function HomePage() {
   };
 
   const handleViewerMode = () => {
-    setBatAnimation(true);
     setTimeout(() => {
         document.documentElement.classList.add('viewer-mode-active');
         setShowLogin(false);
@@ -276,7 +273,6 @@ export default function HomePage() {
             setPassword={setPassword}
             handleSignIn={handleSignIn}
             handleViewerMode={handleViewerMode}
-            batAnimation={batAnimation}
             isFirebaseConfigured={isFirebaseConfigured}
             darkMode={darkMode}
             setDarkMode={setDarkMode}

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Eye, Mail, Lock, AlertTriangle, Sun, Moon } from 'lucide-react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 type LoginScreenProps = {
@@ -16,7 +15,6 @@ type LoginScreenProps = {
   setPassword: (password: string) => void;
   handleSignIn: (e: React.FormEvent) => Promise<void>;
   handleViewerMode: () => void;
-  batAnimation: boolean;
   isFirebaseConfigured: boolean;
   darkMode: boolean;
   setDarkMode: (dark: boolean) => void;
@@ -26,7 +24,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
   email, setEmail,
   password, setPassword,
   handleSignIn,
-  handleViewerMode, batAnimation,
+  handleViewerMode,
   isFirebaseConfigured,
   darkMode, setDarkMode
 }) => {
@@ -108,22 +106,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
           </Button>
         </CardContent>
       </Card>
-
-      {batAnimation && (
-        <div className="fixed inset-0 z-40 pointer-events-none">
-          <Image
-            src="https://placehold.co/200x100/000000/000000.png"
-            data-ai-hint="bat silhouette"
-            alt="Bat flyby"
-            width={100}
-            height={50}
-            className={cn(
-              "w-20 h-auto absolute right-0 top-1/2 transform -translate-y-1/2 animate-flyby",
-              darkMode && "filter invert"
-            )}
-          />
-        </div>
-      )}
     </div>
   );
 };

@@ -42,30 +42,6 @@
   animation: jellySquash 0.3s forwards;
 }
 
-
-/* BAT FLYBY ANIMATION */
-@keyframes flyby {
-  0% {
-    transform: translateX(100vw) translateY(-50%) rotate(0deg);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(-150px) translateY(-50%) rotate(-15deg);
-    opacity: 0;
-  }
-}
-
-.animate-flyby {
-  animation: flyby 0.8s ease-in-out forwards;
-}
-
-
 /* HIDE NATIVE CURSOR */
 html.viewer-mode-active, html.viewer-mode-active * {
   cursor: none !important;
