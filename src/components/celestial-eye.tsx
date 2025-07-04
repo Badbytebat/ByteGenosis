@@ -25,7 +25,22 @@ const CelestialEye: React.FC<CelestialEyeProps> = ({ darkMode }) => {
             const y = e.clientY - (rect.top + rect.height / 2);
             const angle = Math.atan2(y, x);
             
-            pupil.style.transform = `rotate(${angle + Math.PI / 2}rad)`;
+            // We rotate the pupil itself, but the pupil is just a dot.
+            // To make it look like it's moving, we need to rotate its container
+            // or use transform translate. Let's adjust the pupil's container.
+            // A simpler approach is to rotate an invisible line/handle that the pupil is attached to.
+            // For now, simple rotation will just spin it in place. Let's stick with the prompt's simplicity.
+            // The prompt says `eye.style.transform = rotate...` which implies the pupil.
+            // A better visual effect would be `transform: translate(x,y)` within the eyeball bounds.
+            // Let's stick to the prompt's implied logic first.
+            // The prompt is actually `pupil.style.transform = rotate...`
+            // This is incorrect for movement. It should be translating the pupil.
+            // Let's correct the logic to move the pupil inside the eye.
+            const moveRadius = eyeContainer.offsetWidth / 4;
+            const pupilX = Math.cos(angle) * moveRadius;
+            const pupilY = Math.sin(angle) * moveRadius;
+            
+            pupil.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
       });
     };
 
