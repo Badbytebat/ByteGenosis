@@ -47,6 +47,17 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
       }
     });
 
+    const safeImageUrl = (url: string) => {
+      if (!url || typeof url !== 'string') {
+        return 'https://placehold.co/400x500.png';
+      }
+      // Fix for common invalid placehold.co URL
+      if (url.startsWith('https://placehold.co') && !/\d+x\d+/.test(url)) {
+         return 'https://placehold.co/400x500.png';
+      }
+      return url;
+    }
+
     return (
         <section 
             id="about" 
@@ -79,7 +90,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
                         : "shadow-xl"
                     )}>
                       <Image 
-                          src={data.imageUrl}
+                          src={safeImageUrl(data.imageUrl)}
                           alt="Profile Picture"
                           data-ai-hint="person portrait"
                           layout="fill"
