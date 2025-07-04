@@ -24,6 +24,19 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 0.2 });
 
+  const getSkillLevel = (level: number): string => {
+    if (level <= 10) return "Novice";
+    if (level <= 20) return "Beginner";
+    if (level <= 30) return "Learner";
+    if (level <= 40) return "Developing";
+    if (level <= 50) return "Intermediate";
+    if (level <= 60) return "Skilled";
+    if (level <= 70) return "Proficient";
+    if (level <= 80) return "Advanced";
+    if (level <= 90) return "Expert";
+    return "Mastery";
+  };
+  
   const handleUpdate = (id: number, field: keyof Skill, value: string | number) => {
     updateEntry('skills', id, field, value);
   };
@@ -60,36 +73,40 @@ const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry,
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             {data.map((skill) => (
               <div key={skill.id} className="space-y-2 group">
-                <div className="flex justify-between items-center">
-                  {editMode ? (
-                    <Input
-                      value={skill.name}
-                      onChange={(e) => handleUpdate(skill.id, 'name', e.target.value)}
-                      placeholder="Skill Name"
-                      className="text-base font-medium"
-                    />
-                  ) : (
-                    <span className="text-base font-medium">{skill.name}</span>
-                  )}
-                  {editMode && (
-                    <Button variant="ghost" size="icon" className="w-8 h-8 opacity-50 group-hover:opacity-100" onClick={() => deleteEntry('skills', skill.id)}>
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
-                  )}
-                </div>
                 {editMode ? (
-                  <div className="flex items-center gap-2">
-                     <Input 
-                        type="range" 
-                        min="0" max="100" 
-                        value={skill.level} 
-                        onChange={(e) => handleUpdate(skill.id, 'level', parseInt(e.target.value))}
-                        className="p-0"
-                    />
-                    <span className="text-sm text-muted-foreground w-12 text-right">{skill.level}%</span>
-                  </div>
+                  <>
+                    <div className="flex justify-between items-center">
+                      <Input
+                        value={skill.name}
+                        onChange={(e) => handleUpdate(skill.id, 'name', e.target.value)}
+                        placeholder="Skill Name"
+                        className="text-base font-medium"
+                      />
+                      <Button variant="ghost" size="icon" className="w-8 h-8 opacity-50 group-hover:opacity-100" onClick={() => deleteEntry('skills', skill.id)}>
+                        <Trash2 className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <Input 
+                          type="range" 
+                          min="0" max="100" 
+                          value={skill.level} 
+                          onChange={(e) => handleUpdate(skill.id, 'level', parseInt(e.target.value, 10))}
+                          className="p-0"
+                      />
+                      <span className="text-sm text-muted-foreground w-12 text-right">{skill.level}%</span>
+                    </div>
+                  </>
                 ) : (
-                  <Progress value={parseInt(skill.level.toString())} className="h-2 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-accent" />
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span className="text-base font-medium">{skill.name}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {skill.level}% | {getSkillLevel(skill.level)}
+                      </span>
+                    </div>
+                    <Progress value={skill.level} className="h-2 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-accent" />
+                  </>
                 )}
               </div>
             ))}
