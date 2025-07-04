@@ -86,7 +86,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
                     <div className={cn(
                         "relative group aspect-[4/5] w-full max-w-xs mx-auto md:max-w-none rounded-lg overflow-hidden transition-all duration-300",
                          darkMode 
-                        ? "shadow-2xl shadow-accent/20 border-2 border-accent/50" 
+                        ? "shadow-2xl shadow-accent/20 border-2 border-accent/50 animate-pulse-glow" 
                         : "shadow-xl"
                     )}>
                       <Image 

@@ -216,3 +216,17 @@ html.viewer-mode-active, html.viewer-mode-active * {
     background-position: 0% 50%;
   }
 }
+
+/* PROFILE PICTURE PULSATING GLOW */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px hsl(var(--accent) / 0.4), 0 0 30px hsl(var(--accent) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px hsl(var(--accent) / 0.7), 0 0 50px hsl(var(--accent) / 0.4);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
