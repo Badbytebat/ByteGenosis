@@ -98,7 +98,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             className={cn(
               "w-full rounded-full",
               darkMode 
-                ? "glass-effect shadow-lg shadow-accent/30 border-accent/50 hover:bg-accent hover:text-accent-foreground"
+                ? "jelly-btn glass-effect shadow-lg shadow-accent/30 border-accent/50 hover:bg-accent hover:text-accent-foreground"
                 : "light-btn"
             )}
           >
