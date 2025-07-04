@@ -24,7 +24,6 @@ import EducationSection from '@/components/sections/education';
 import CertificationsSection from '@/components/sections/certifications';
 import ResumeSection from '@/components/sections/resume';
 import ContactSection from '@/components/sections/contact';
-import ProfilePicUploader from '@/components/profile-pic-uploader';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -308,7 +307,6 @@ export default function HomePage() {
                   scrollToSection={scrollToSection} 
                   darkMode={darkMode}
               />
-              <ProfilePicUploader />
               <AboutSection 
                 data={data.about}
                 editMode={editMode}
