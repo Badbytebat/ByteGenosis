@@ -22,7 +22,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode }) => {
       "أبتثجحخدذرزسشصضطظعغفقكلمنهوي" +
       "अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसह" +
       "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-      const throttleInterval = 40; // ~25fps, a good balance between effect and performance
+      const throttleInterval = 80; // ~12.5fps, a good balance between effect and performance
 
        // Colors from the miui-glow-text gradient
       const colors = [
