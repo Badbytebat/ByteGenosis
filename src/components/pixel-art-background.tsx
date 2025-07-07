@@ -11,7 +11,7 @@ const PixelArtBackground: React.FC<PixelArtBackgroundProps> = ({ darkMode }) => 
   // useMemo ensures that the random values are generated only once per component mount
   const { stars, birds, clouds } = useMemo(() => {
     // Star randomization
-    const starCount = Math.floor(Math.random() * 40) + 40; // 40-79 stars
+    const starCount = Math.floor(Math.random() * 40) + 45; // 45-84 stars
     const starColors = ['white', '#FFFFE0', '#F5F5DC']; // White, LightYellow, Beige
     
     const stars = Array.from({ length: starCount }, (_, i) => {
