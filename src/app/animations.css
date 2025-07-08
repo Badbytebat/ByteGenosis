@@ -43,7 +43,7 @@
 }
 
 /* HIDE NATIVE CURSOR */
-html.viewer-mode-active, html.viewer-mode-active * {
+html.custom-cursor-active, html.custom-cursor-active * {
   cursor: none !important;
 }
 

@@ -70,14 +70,22 @@ export default function HomePage() {
         setEditMode(true);
         setShowLogin(false);
         toast({ title: "Welcome!", description: "Edit mode activated." });
-        document.documentElement.classList.remove('viewer-mode-active');
       } else {
         setEditMode(false);
       }
     }
   }, [user, authLoading, toast]);
 
-  const debouncedSave = useDebouncedCallback(async (newData: PortfolioData) => {
+  // Handle custom cursor visibility based on edit mode
+  useEffect(() => {
+    if (editMode) {
+      document.documentElement.classList.remove('custom-cursor-active');
+    } else {
+      document.documentElement.classList.add('custom-cursor-active');
+    }
+  }, [editMode]);
+
+  const debouncedSave = useDebouncedCallback(async (newData: Partial<PortfolioData>) => {
     if (!editMode) return;
     try {
       await savePortfolioData(newData);
@@ -99,7 +107,7 @@ export default function HomePage() {
         item.id === id ? { ...item, [field]: value } : item
       );
       const newData = { ...prevData, [section]: updatedSectionData };
-      debouncedSave(newData);
+      debouncedSave({ [section]: updatedSectionData });
       return newData;
     });
   }, [debouncedSave]);
@@ -131,8 +139,9 @@ export default function HomePage() {
                 break;
         }
 
-        const newData = { ...prevData, [section]: [...(sectionData || []), newItem] };
-        debouncedSave(newData);
+        const updatedSection = [...(sectionData || []), newItem];
+        const newData = { ...prevData, [section]: updatedSection };
+        debouncedSave({ [section]: updatedSection });
         return newData;
     });
   }, [debouncedSave]);
@@ -142,7 +151,7 @@ export default function HomePage() {
         const sectionData = prevData[section] as any[];
         const updatedSectionData = sectionData.filter(item => item.id !== id);
         const newData = { ...prevData, [section]: updatedSectionData };
-        debouncedSave(newData);
+        debouncedSave({ [section]: updatedSectionData });
         return newData;
     });
   }, [debouncedSave]);
@@ -150,58 +159,62 @@ export default function HomePage() {
   const handleHeaderUpdate = useCallback((field: keyof HeaderData, value: string) => {
     setData(prevData => {
         const newHeader = { ...prevData.header, [field]: value };
-        const newData = { ...prevData, header: newHeader };
-        debouncedSave(newData);
-        return newData;
+        debouncedSave({ header: newHeader });
+        return { ...prevData, header: newHeader };
     });
   }, [debouncedSave]);
 
   const handleHeroUpdate = useCallback((field: keyof HeroData, value: string) => {
     setData(prevData => {
         const newHero = { ...prevData.hero, [field]: value };
-        const newData = { ...prevData, hero: newHero };
-        debouncedSave(newData);
-        return newData;
+        debouncedSave({ hero: newHero });
+        return { ...prevData, hero: newHero };
     });
   }, [debouncedSave]);
 
   const handleAboutUpdate = useCallback((field: keyof AboutData, value: string) => {
     setData(prevData => {
         const newAbout = { ...prevData.about, [field]: value };
-        const newData = { ...prevData, about: newAbout };
-        debouncedSave(newData);
-        return newData;
+        debouncedSave({ about: newAbout });
+        return { ...prevData, about: newAbout };
     });
   }, [debouncedSave]);
   
   const handleResumeUpload = async (file: File) => {
-    if (!editMode || isResumeUploading) return;
-    if (!file) {
-        toast({ variant: 'destructive', title: 'Upload Failed', description: 'No file selected.'});
-        return;
+    if (!editMode || !user) {
+      toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to upload a resume.' });
+      return;
     }
-
+    if (isResumeUploading) return;
+  
+    const allowedTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please upload a PDF or DOCX file.' });
+      return;
+    }
+  
     setIsResumeUploading(true);
     const { id: toastId, update } = toast({ description: "Uploading resume..." });
-
+  
     try {
-        const downloadURL = await uploadFile(file, `resumes/resume_${Date.now()}_${file.name}`);
-        setData(prevData => {
-            const newData = { ...prevData, resumeUrl: downloadURL };
-            debouncedSave(newData);
-            return newData;
-        });
-        update({ id: toastId, description: "Resume uploaded successfully." });
+      const filePath = `resumes/${user.uid}/${file.name}`;
+      const downloadURL = await uploadFile(file, filePath);
+  
+      await savePortfolioData({ resumeUrl: downloadURL });
+  
+      setData(prevData => ({ ...prevData, resumeUrl: downloadURL }));
+      
+      update({ id: toastId, title: "Success!", description: "Resume uploaded successfully." });
     } catch (error: any) {
-        console.error("Resume upload failed:", error);
-        update({ 
-            id: toastId, 
-            variant: 'destructive', 
-            title: 'Upload Failed', 
-            description: error.message || 'Could not upload resume. Please check the console.' 
-        });
+      console.error("Resume upload failed:", error);
+      update({
+        id: toastId,
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: error.message || 'Could not upload resume. Please check the console.'
+      });
     } finally {
-        setIsResumeUploading(false);
+      setIsResumeUploading(false);
     }
   };
 
@@ -213,7 +226,6 @@ export default function HomePage() {
 
   const handleViewerMode = () => {
     setTimeout(() => {
-        document.documentElement.classList.add('viewer-mode-active');
         setShowLogin(false);
     }, 300); // Small delay for fade out to start
   };
@@ -222,12 +234,10 @@ export default function HomePage() {
     await signOut();
     setEditMode(false);
     setShowLogin(true);
-    document.documentElement.classList.remove('viewer-mode-active');
   };
 
   const handleReturnToLogin = () => {
     setShowLogin(true);
-    document.documentElement.classList.remove('viewer-mode-active');
   };
 
   const scrollToSection = (id: string) => {
