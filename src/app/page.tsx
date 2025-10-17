@@ -24,6 +24,7 @@ import EducationSection from '@/components/sections/education';
 import CertificationsSection from '@/components/sections/certifications';
 import ResumeSection from '@/components/sections/resume';
 import ContactSection from '@/components/sections/contact';
+import ProjectRecommender from '@/components/sections/project-recommender';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -187,7 +188,7 @@ export default function HomePage() {
     }
     if (isResumeUploading) return;
   
-    const allowedTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    const allowedTypes = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"];
     if (!allowedTypes.includes(file.type)) {
       toast({ variant: 'destructive', title: 'Invalid File Type', description: 'Please upload a PDF or DOCX file.' });
       return;
@@ -354,6 +355,7 @@ export default function HomePage() {
                     deleteEntry={handleDelete as any}
                     darkMode={darkMode}
                 />
+                <ProjectRecommender darkMode={darkMode} />
                 <EducationSection 
                     data={educationItems} 
                     editMode={editMode} 
