@@ -18,9 +18,21 @@ const FloatingChatbot: React.FC<Props> = ({ darkMode }) => {
   const toggleChat = () => setIsOpen(!isOpen);
 
   const containerVariants = {
-    closed: { opacity: 0, y: 50, scale: 0.9, originX: 1, originY: 1 },
-    open: { opacity: 1, y: 0, scale: 1, originX: 1, originY: 1,
-        transition: { type: 'spring', stiffness: 300, damping: 30 }
+    closed: { 
+      opacity: 0, 
+      y: 50, 
+      scale: 0.9, 
+      originX: 1, 
+      originY: 1,
+      transition: { type: 'spring', stiffness: 400, damping: 35 }
+    },
+    open: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      originX: 1, 
+      originY: 1,
+      transition: { type: 'spring', stiffness: 300, damping: 30 }
     },
   };
 
