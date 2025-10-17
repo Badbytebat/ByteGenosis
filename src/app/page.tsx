@@ -90,7 +90,7 @@ export default function HomePage() {
   const debouncedSave = useDebouncedCallback(async (newData: Partial<PortfolioData>) => {
     if (!editMode) return;
     try {
-      await savePortfolioData(newData);
+      await savePortfolioData(newData as PortfolioData);
       toast({ description: "Changes saved automatically." });
     } catch (error) {
       toast({ variant: 'destructive', title: 'Save failed', description: 'Could not save changes.' });
@@ -202,7 +202,7 @@ export default function HomePage() {
       const filePath = `resumes/${user.uid}/${file.name}`;
       const downloadURL = await uploadFile(file, filePath);
   
-      await savePortfolioData({ resumeUrl: downloadURL });
+      await savePortfolioData({ ...data, resumeUrl: downloadURL });
   
       setData(prevData => ({ ...prevData, resumeUrl: downloadURL }));
       
@@ -377,7 +377,7 @@ export default function HomePage() {
                     resumeUrl={data.resumeUrl}
                     editMode={editMode}
                     onUpload={handleResumeUpload}
-                    isUploading={isUploading}
+                    isUploading={isResumeUploading}
                     darkMode={darkMode}
                 />
                 <ContactSection
