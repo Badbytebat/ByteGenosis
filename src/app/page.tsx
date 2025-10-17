@@ -25,6 +25,7 @@ import CertificationsSection from '@/components/sections/certifications';
 import ResumeSection from '@/components/sections/resume';
 import ContactSection from '@/components/sections/contact';
 import ProjectRecommender from '@/components/sections/project-recommender';
+import FloatingChatbot from '@/components/floating-chatbot';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -309,7 +310,7 @@ export default function HomePage() {
                 onUpdate={handleHeaderUpdate}
               />
               
-              <div className="fixed bottom-4 right-4 z-50">
+              <div className="fixed bottom-4 left-4 z-50">
                 {editMode ? (
                   <Button onClick={handleLogout}>Logout &amp; Exit Edit Mode</Button>
                 ) : (
@@ -376,7 +377,7 @@ export default function HomePage() {
                     resumeUrl={data.resumeUrl}
                     editMode={editMode}
                     onUpload={handleResumeUpload}
-                    isUploading={isResumeUploading}
+                    isUploading={isUploading}
                     darkMode={darkMode}
                 />
                 <ContactSection
@@ -389,6 +390,7 @@ export default function HomePage() {
                 />
               </main>
               <Footer />
+              <FloatingChatbot darkMode={darkMode} />
             </div>
           </motion.div>
         )}
