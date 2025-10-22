@@ -6,9 +6,10 @@ import React, { useEffect, useRef } from 'react';
 type MatrixCursorProps = {
   darkMode: boolean;
   cursorText: string;
+  color: string;
 };
 
-const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText }) => {
+const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color }) => {
   const animationFrameId = useRef<number>();
   const lastTimestamp = useRef(0);
   const cursorPos = useRef({ x: 0, y: 0 });
@@ -31,6 +32,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText }) => 
         textCursor.textContent = cursorText;
         textCursor.style.left = `${cursorPos.current.x}px`;
         textCursor.style.top = `${cursorPos.current.y}px`;
+        textCursor.style.setProperty('--cursor-glow-color', color);
         animationFrameId.current = requestAnimationFrame(updateTextAnimation);
       };
       animationFrameId.current = requestAnimationFrame(updateTextAnimation);
@@ -112,7 +114,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText }) => 
       window.removeEventListener('mousemove', handleMouseMove);
       cleanup();
     };
-  }, [darkMode, cursorText]);
+  }, [darkMode, cursorText, color]);
 
   return null;
 };

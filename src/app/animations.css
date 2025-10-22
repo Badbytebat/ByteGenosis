@@ -78,16 +78,14 @@ html.custom-cursor-active, html.custom-cursor-active * {
   font-family: 'Space Grotesk', monospace;
   font-size: 1.25rem;
   font-weight: bold;
-  color: white;
-  background: black;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  color: var(--cursor-glow-color, white); /* Use CSS variable for color */
   pointer-events: none;
   z-index: 9999;
   user-select: none;
-  text-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent));
+  text-shadow: 0 0 5px var(--cursor-glow-color), 0 0 10px var(--cursor-glow-color);
   transition: all 0.1s ease-out;
 }
+
 
 /* --- LIGHT MODE ANIMATIONS --- */
 

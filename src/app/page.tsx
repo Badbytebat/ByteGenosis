@@ -34,6 +34,11 @@ const SELECTION_WORDS = [
   "ചुनें", "تحديد", "בחירה", "Valitse", "Velg", "Vælg", "Selecione", "Seç", "เลือก"
 ];
 
+const CURSOR_COLORS = [
+    'hsl(260, 60%, 65%)', '#ff6b6b', '#feca57', 
+    'hsl(228, 64%, 33%)', '#48dbfb', 'hsl(169, 100%, 50%)'
+];
+
 export default function HomePage() {
   const { user, loading: authLoading, signIn, signOut } = useAuth();
   
@@ -43,6 +48,7 @@ export default function HomePage() {
   const [editMode, setEditMode] = useState(false);
   const [isResumeUploading, setIsResumeUploading] = useState(false);
   const [cursorText, setCursorText] = useState('');
+  const [cursorColor, setCursorColor] = useState(CURSOR_COLORS[0]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -51,6 +57,7 @@ export default function HomePage() {
   const { toast } = useToast();
   const isFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'CHANGEME';
   const wordIndexRef = useRef(0);
+  const colorIndexRef = useRef(0);
 
   // Fetch initial data
   useEffect(() => {
@@ -99,6 +106,9 @@ export default function HomePage() {
       if (isInteractive(target)) {
         wordIndexRef.current = (wordIndexRef.current + 1) % SELECTION_WORDS.length;
         setCursorText(SELECTION_WORDS[wordIndexRef.current]);
+
+        colorIndexRef.current = (colorIndexRef.current + 1) % CURSOR_COLORS.length;
+        setCursorColor(CURSOR_COLORS[colorIndexRef.current]);
       } else {
         setCursorText('');
       }
@@ -310,7 +320,7 @@ export default function HomePage() {
   
   return (
     <>
-      {!editMode && <MatrixCursor darkMode={darkMode} cursorText={cursorText} />}
+      {!editMode && <MatrixCursor darkMode={darkMode} cursorText={cursorText} color={cursorColor} />}
       <AnimatePresence mode="wait">
         {(showLogin && !user) ? (
           <motion.div
