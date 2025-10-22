@@ -2,14 +2,16 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
+import type { CursorStyle } from '@/app/page';
 
 type MatrixCursorProps = {
   darkMode: boolean;
   cursorText: string;
   color: string;
+  style: CursorStyle;
 };
 
-const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color }) => {
+const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color, style }) => {
   const animationFrameId = useRef<number>();
   const lastTimestamp = useRef(0);
   const cursorPos = useRef({ x: 0, y: 0 });
@@ -22,8 +24,8 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
     };
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Logic for Text Cursor (when cursorText is provided in dark mode)
-    if (cursorText && darkMode) {
+    // Logic for Text Cursor on interactive elements
+    if (cursorText && (style === 'matrix' || style === 'text')) {
       const textCursor = document.createElement('span');
       textCursor.className = 'cursor-text-label';
       document.body.appendChild(textCursor);
@@ -43,7 +45,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
       };
     }
     // Logic for Dark Mode (Matrix Trail)
-    else if (darkMode) {
+    else if (style === 'matrix' && darkMode) {
       const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" +
       "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン" +
       "あいうえおかきくけこさしすせそたちつてとなにぬねの" +
@@ -92,7 +94,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
       };
     } 
     // Logic for Light Mode (Inverted Orb)
-    else {
+    else if (style === 'orb' && !darkMode) {
       const lightModeCursor = document.createElement('div');
       lightModeCursor.className = 'light-cursor';
       document.body.appendChild(lightModeCursor);
@@ -114,9 +116,11 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
       window.removeEventListener('mousemove', handleMouseMove);
       cleanup();
     };
-  }, [darkMode, cursorText, color]);
+  }, [darkMode, cursorText, color, style]);
 
   return null;
 };
 
 export default MatrixCursor;
+
+    

@@ -28,6 +28,9 @@ import ProjectRecommender from '@/components/sections/project-recommender';
 import FloatingChatbot from '@/components/floating-chatbot';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import CursorSelector from '@/components/cursor-selector';
+
+export type CursorStyle = 'matrix' | 'text' | 'orb' | 'none';
 
 const SELECTION_WORDS = [
   "Select", "Elegir", "Choisir", "Wählen", "選択", "선택", "选择", "Выбрать", "Selezionare", "Kies",
@@ -49,6 +52,7 @@ export default function HomePage() {
   const [isResumeUploading, setIsResumeUploading] = React.useState(false);
   const [cursorText, setCursorText] = React.useState('');
   const [cursorColor, setCursorColor] = React.useState(CURSOR_COLORS[0]);
+  const [cursorStyle, setCursorStyle] = React.useState<CursorStyle>('matrix');
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -92,7 +96,7 @@ export default function HomePage() {
     }
   }, [user, authLoading, toast]);
 
-  // Handle custom cursor visibility based on edit mode
+  // Handle custom cursor visibility based on edit mode and style
   React.useEffect(() => {
     const isInteractive = (element: HTMLElement | null): boolean => {
       if (!element) return false;
@@ -102,8 +106,6 @@ export default function HomePage() {
     };
 
     const handleMouseOver = (e: MouseEvent) => {
-      if (!darkMode) return; // Only show text cursor in dark mode
-      
       const target = e.target as HTMLElement;
       if (isInteractive(target)) {
         wordIndexRef.current = (wordIndexRef.current + 1) % SELECTION_WORDS.length;
@@ -117,16 +119,16 @@ export default function HomePage() {
     };
     
     const handleMouseOut = () => {
-        if (!darkMode) return;
         setCursorText('');
     };
 
-    if (editMode) {
-      document.documentElement.classList.remove('custom-cursor-active');
-    } else {
+    // Activate custom cursor if not in edit mode and a style is selected
+    if (!editMode && cursorStyle !== 'none') {
       document.documentElement.classList.add('custom-cursor-active');
       window.addEventListener('mouseover', handleMouseOver);
       window.addEventListener('mouseout', handleMouseOut);
+    } else {
+      document.documentElement.classList.remove('custom-cursor-active');
     }
     
     return () => {
@@ -134,7 +136,7 @@ export default function HomePage() {
         window.removeEventListener('mouseout', handleMouseOut);
         document.documentElement.classList.remove('custom-cursor-active');
     }
-  }, [editMode, darkMode]);
+  }, [editMode, darkMode, cursorStyle]);
 
 
   const debouncedSave = useDebouncedCallback(async (newData: Partial<PortfolioData>) => {
@@ -321,7 +323,14 @@ export default function HomePage() {
   
   return (
     <>
-      {!editMode && <MatrixCursor darkMode={darkMode} cursorText={cursorText} color={cursorColor} />}
+      {!editMode && cursorStyle !== 'none' && (
+        <MatrixCursor 
+          darkMode={darkMode} 
+          cursorText={cursorText} 
+          color={cursorColor} 
+          style={cursorStyle} 
+        />
+      )}
       <AnimatePresence mode="wait">
         {(showLogin && !user) ? (
           <motion.div
@@ -439,6 +448,11 @@ export default function HomePage() {
                     deleteEntry={handleDelete as any}
                     darkMode={darkMode}
                 />
+                <CursorSelector
+                  darkMode={darkMode}
+                  selectedStyle={cursorStyle}
+                  onStyleChange={setCursorStyle}
+                />
               </main>
               <Footer />
               <FloatingChatbot darkMode={darkMode} portfolioData={data} />
@@ -449,3 +463,5 @@ export default function HomePage() {
     </>
   );
 }
+
+    
