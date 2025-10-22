@@ -32,14 +32,21 @@ const PixelArtBackground: React.FC<PixelArtBackgroundProps> = ({ darkMode }) => 
     });
 
     const birdCount = Math.floor(Math.random() * 3) + 2; // Random number of birds (2-4)
-    const birds = Array.from({ length: birdCount }, (_, i) => ({
-        id: `bird-${i}`,
-        style: {
-          top: `${10 + Math.random() * 20}%`,
-          animationDelay: `${i * 4 + Math.random() * 2}s`,
-          animationDuration: `${Math.random() * 10 + 10}s`, // Random speed (10s-20s)
+    const birds = Array.from({ length: birdCount }, (_, i) => {
+        const flyDuration = Math.random() * 10 + 10; // Random speed (10s-20s)
+        const flapDuration = Math.random() * 0.3 + 0.3; // Random flap speed (0.3s-0.6s)
+        return {
+            id: `bird-${i}`,
+            style: {
+              top: `${10 + Math.random() * 20}%`,
+              animationDelay: `${i * 4 + Math.random() * 2}s`,
+              animationDuration: `${flyDuration}s`, 
+            },
+            wingStyle: {
+                animationDuration: `${flapDuration}s`,
+            }
         }
-    }));
+    });
     
     const cloudCount = Math.floor(Math.random() * 5) + 3; // Random number of clouds (3-7)
     const clouds = Array.from({ length: cloudCount }, (_, i) => ({
@@ -62,7 +69,12 @@ const PixelArtBackground: React.FC<PixelArtBackgroundProps> = ({ darkMode }) => 
       ))}
       
       {birds.map(bird => (
-         <div key={bird.id} className="pixel-bird" style={bird.style} />
+         <div key={bird.id} className="pixel-bird" style={bird.style}>
+            <div className="bird-body">
+                <div className="bird-wing left-wing" style={bird.wingStyle}></div>
+                <div className="bird-wing right-wing" style={bird.wingStyle}></div>
+            </div>
+         </div>
       ))}
 
       {clouds.map(cloud => (
