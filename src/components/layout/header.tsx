@@ -48,7 +48,12 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, scrollToSection,
       {/* Center Nav - Hidden on small screens */}
       <nav className="hidden md:flex items-center gap-2">
         {navItems.map((item) => (
-          <Button key={item} onClick={() => scrollToSection(item)} variant="ghost" className="glass-effect capitalize">
+          <Button 
+            key={item} 
+            onClick={() => scrollToSection(item)} 
+            variant="ghost" 
+            className="glass-effect capitalize nav-link-animate"
+          >
             <span className="pointer-events-none">{item}</span>
           </Button>
         ))}
