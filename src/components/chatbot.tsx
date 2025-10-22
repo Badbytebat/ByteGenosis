@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -9,7 +10,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { chatAboutRitesh } from '@/ai/flows/chatbot-flow';
 import { useToast } from '@/hooks/use-toast';
-import { getPortfolioData } from '@/lib/firestore';
 import { PortfolioData } from '@/lib/types';
 
 type Message = {
@@ -20,31 +20,15 @@ type Message = {
 
 type Props = {
   darkMode: boolean;
+  portfolioData: PortfolioData;
 };
 
-const Chatbot: React.FC<Props> = ({ darkMode }) => {
+const Chatbot: React.FC<Props> = ({ darkMode, portfolioData }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const portfolioDataRef = useRef<PortfolioData | null>(null);
-
-  useEffect(() => {
-    const fetchPortfolio = async () => {
-      try {
-        portfolioDataRef.current = await getPortfolioData();
-      } catch (error) {
-        console.error("Failed to fetch portfolio data for chatbot", error);
-        toast({
-          variant: 'destructive',
-          title: 'Chatbot Initialization Error',
-          description: 'Could not load portfolio context.'
-        });
-      }
-    };
-    fetchPortfolio();
-  }, [toast]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,7 +48,7 @@ const Chatbot: React.FC<Props> = ({ darkMode }) => {
   const handleSend = async () => {
     if (input.trim() === '' || isLoading) return;
 
-    if (!portfolioDataRef.current) {
+    if (!portfolioData) {
        toast({
         variant: 'destructive',
         title: 'Chatbot Not Ready',
@@ -90,7 +74,7 @@ const Chatbot: React.FC<Props> = ({ darkMode }) => {
       
       const response = await chatAboutRitesh({ 
         question: input, 
-        portfolioData: portfolioDataRef.current,
+        portfolioData: portfolioData,
         history: historyForAI
       });
       const newBotMessage: Message = {

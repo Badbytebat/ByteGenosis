@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button';
 import { MessageSquare, X } from 'lucide-react';
 import Chatbot from '@/components/chatbot';
 import { cn } from '@/lib/utils';
+import type { PortfolioData } from '@/lib/types';
 
 type Props = {
   darkMode: boolean;
+  portfolioData: PortfolioData;
 };
 
-const FloatingChatbot: React.FC<Props> = ({ darkMode }) => {
+const FloatingChatbot: React.FC<Props> = ({ darkMode, portfolioData }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleChat = () => setIsOpen(!isOpen);
@@ -47,7 +49,7 @@ const FloatingChatbot: React.FC<Props> = ({ darkMode }) => {
             exit="closed"
             className="mb-2"
           >
-            <Chatbot darkMode={darkMode} />
+            <Chatbot darkMode={darkMode} portfolioData={portfolioData} />
           </motion.div>
         )}
       </AnimatePresence>

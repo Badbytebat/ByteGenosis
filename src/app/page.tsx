@@ -30,7 +30,8 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const SELECTION_WORDS = [
-  "Select", "Elegir", "Choisir", "Wählen", "選択", "선택", "选择", "Выбрать", "Selezionare", "Kies"
+  "Select", "Elegir", "Choisir", "Wählen", "選択", "선택", "选择", "Выбрать", "Selezionare", "Kies",
+  "ചुनें", "تحديد", "בחירה", "Valitse", "Velg", "Vælg", "Selecione", "Seç", "เลือก"
 ];
 
 export default function HomePage() {
@@ -49,7 +50,7 @@ export default function HomePage() {
   
   const { toast } = useToast();
   const isFirebaseConfigured = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== 'CHANGEME';
-  let wordIndex = 0;
+  const wordIndexRef = useRef(0);
 
   // Fetch initial data
   useEffect(() => {
@@ -97,8 +98,8 @@ export default function HomePage() {
       const target = e.target as HTMLElement;
       if (isInteractive(target)) {
         document.documentElement.classList.remove('custom-cursor-active');
-        wordIndex = (wordIndex + 1) % SELECTION_WORDS.length;
-        setCursorText(SELECTION_WORDS[wordIndex]);
+        wordIndexRef.current = (wordIndexRef.current + 1) % SELECTION_WORDS.length;
+        setCursorText(SELECTION_WORDS[wordIndexRef.current]);
       } else {
         document.documentElement.classList.add('custom-cursor-active');
         setCursorText('');
@@ -116,6 +117,7 @@ export default function HomePage() {
     
     return () => {
         window.removeEventListener('mouseover', handleMouseOver);
+        document.documentElement.classList.remove('custom-cursor-active');
     }
   }, [editMode]);
 
@@ -411,7 +413,7 @@ export default function HomePage() {
                     resumeUrl={data.resumeUrl}
                     editMode={editMode}
                     onUpload={handleResumeUpload}
-                    isUploading={isUploading}
+                    isUploading={isResumeUploading}
                     darkMode={darkMode}
                 />
                 <ContactSection
@@ -424,7 +426,7 @@ export default function HomePage() {
                 />
               </main>
               <Footer />
-              <FloatingChatbot darkMode={darkMode} />
+              <FloatingChatbot darkMode={darkMode} portfolioData={data} />
             </div>
           </motion.div>
         )}
