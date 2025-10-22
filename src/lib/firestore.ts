@@ -1,12 +1,10 @@
-
 import { db } from './firebase';
-import { doc, getDoc, setDoc, collection, getDocs, query, orderBy, updateDoc, deleteDoc } from 'firebase/firestore';
-import type { PortfolioData, ContactMessage } from './types';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import type { PortfolioData } from './types';
 import { defaultData } from './data';
 
 const PORTFOLIO_DOC_ID = 'main-portfolio';
 const PORTFOLIO_COLLECTION = 'portfolios';
-const CONTACTS_COLLECTION = 'contacts';
 
 
 export const getPortfolioData = async (): Promise<PortfolioData> => {
@@ -50,37 +48,4 @@ export const savePortfolioData = async (data: PortfolioData): Promise<void> => {
     console.error("Error saving portfolio data:", error);
     throw new Error('Failed to save data to Firestore.');
   }
-};
-
-// Functions for Contact Message Management
-export const getContactMessages = async (): Promise<ContactMessage[]> => {
-    try {
-        const messagesCollection = collection(db, CONTACTS_COLLECTION);
-        const q = query(messagesCollection, orderBy('createdAt', 'desc'));
-        const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => doc.data() as ContactMessage);
-    } catch (error) {
-        console.error("Error fetching contact messages:", error);
-        throw new Error('Failed to fetch messages.');
-    }
-};
-
-export const updateContactMessage = async (id: string, updates: Partial<ContactMessage>): Promise<void> => {
-    try {
-        const docRef = doc(db, CONTACTS_COLLECTION, id);
-        await updateDoc(docRef, updates);
-    } catch (error) {
-        console.error("Error updating contact message:", error);
-        throw new Error('Failed to update message.');
-    }
-};
-
-export const deleteContactMessage = async (id: string): Promise<void> => {
-    try {
-        const docRef = doc(db, CONTACTS_COLLECTION, id);
-        await deleteDoc(docRef);
-    } catch (error) {
-        console.error("Error deleting contact message:", error);
-        throw new Error('Failed to delete message.');
-    }
 };

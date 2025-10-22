@@ -56,21 +56,6 @@ export interface AboutData {
   description3: string;
 }
 
-export interface ContactMessage {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-  createdAt: { seconds: number; nanoseconds: number; };
-  isRead: boolean;
-  isPinned: boolean;
-  aiAssessment: {
-    classification: 'Useful' | 'Spam';
-    reasoning: string;
-  };
-}
-
 export interface PortfolioData {
   header: HeaderData;
   hero: HeroData;

@@ -1,11 +1,10 @@
-
 "use client";
 
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Sun, Moon, LayoutDashboard } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 import LogoIcon from './logo-icon';
 import type { HeaderData } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -75,13 +74,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, scrollToSection,
 
       {/* Right Side */}
       <div className="flex items-center gap-2">
-        {isLoggedIn && (
-           <Link href="/dashboard" passHref>
-            <Button variant="ghost" size="icon" className="hover:bg-accent/20 transition-all" aria-label="Dashboard">
-                <LayoutDashboard className="h-5 w-5" />
-            </Button>
-           </Link>
-        )}
         <Button onClick={() => setDarkMode(!darkMode)} variant="ghost" size="icon" className="hover:bg-accent/20 transition-all" aria-label="Toggle theme">
           {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
