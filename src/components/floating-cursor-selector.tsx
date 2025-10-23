@@ -23,10 +23,10 @@ const darkStyles: StyleOption[] = [
 ];
 
 const lightStyles: StyleOption[] = [
+  { style: 'spotlight', name: 'Spotlight', icon: Eye },
   { style: 'orb', name: 'Inverted', icon: Orbit },
   { style: 'jello', name: 'Jello', icon: Waves },
   { style: 'underline', name: 'Underline', icon: Sparkles },
-  { style: 'text', name: 'Text Glow', icon: Sparkles },
   { style: 'none', name: 'None', icon: X },
 ];
 
@@ -135,5 +135,3 @@ const FloatingCursorSelector: React.FC<Props> = ({ darkMode, selectedStyle, onSt
 };
 
 export default FloatingCursorSelector;
-
-    

@@ -148,12 +148,10 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
             }
             break;
         case 'spotlight':
-             if (darkMode) {
-                const spotlight = document.createElement('div');
-                spotlight.id = 'spotlight-overlay';
-                spotlight.className = 'spotlight-overlay';
-                document.body.appendChild(spotlight);
-             }
+            const spotlight = document.createElement('div');
+            spotlight.id = 'spotlight-overlay';
+            spotlight.className = cn('spotlight-overlay', darkMode ? 'dark' : 'light');
+            document.body.appendChild(spotlight);
             break;
         case 'ghost':
             if (darkMode) {
@@ -202,5 +200,3 @@ const createMatrixParticle = (x: number, y: number) => {
 
 
 export default MatrixCursor;
-
-    
