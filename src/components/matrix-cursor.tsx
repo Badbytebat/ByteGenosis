@@ -113,6 +113,14 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
     
     // Create elements based on style
     switch(style) {
+        case 'matrix':
+            if (isInteractive && cursorText) {
+                mainCursor = document.createElement('span');
+                mainCursor.className = 'cursor-text-label';
+                mainCursor.textContent = cursorText;
+                mainCursor.style.setProperty('--cursor-glow-color', color);
+            }
+            break;
         case 'text':
             mainCursor = document.createElement('span');
             mainCursor.className = 'cursor-text-label';

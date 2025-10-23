@@ -17,7 +17,6 @@ type StyleOption = {
 // Different sets of animations for dark and light mode
 const darkStyles: StyleOption[] = [
   { style: 'matrix', name: 'Matrix', icon: Wand },
-  { style: 'text', name: 'Text Glow', icon: Sparkles },
   { style: 'spotlight', name: 'Spotlight', icon: Eye },
   { style: 'ghost', name: 'Ghost', icon: Ghost },
   { style: 'none', name: 'None', icon: X },
