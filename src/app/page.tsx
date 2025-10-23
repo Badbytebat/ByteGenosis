@@ -432,7 +432,7 @@ export default function HomePage() {
                     resumeUrl={data.resumeUrl}
                     editMode={editMode}
                     onUpload={handleResumeUpload}
-                    isUploading={isUploading}
+                    isUploading={isResumeUploading}
                     darkMode={darkMode}
                 />
                 <ContactSection
@@ -462,3 +462,4 @@ export default function HomePage() {
     
 
     
+
