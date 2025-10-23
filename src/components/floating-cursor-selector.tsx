@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Sparkles, X, Wand, Ghost, Orbit, Waves } from 'lucide-react';
+import { Sparkles, X, Wand, Ghost, Orbit, Waves, Bot, Eye, Wind, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CursorStyle } from '@/app/page';
 
@@ -18,6 +18,8 @@ type StyleOption = {
 const darkStyles: StyleOption[] = [
   { style: 'matrix', name: 'Matrix', icon: Wand },
   { style: 'ghost', name: 'Ghost', icon: Ghost },
+  { style: 'glitch', name: 'Glitch', icon: Bot },
+  { style: 'starlight', name: 'Starlight', icon: Sparkles },
   { style: 'none', name: 'None', icon: X },
 ];
 
@@ -25,6 +27,8 @@ const lightStyles: StyleOption[] = [
   { style: 'orb', name: 'Inverted', icon: Orbit },
   { style: 'jello', name: 'Jello', icon: Waves },
   { style: 'underline', name: 'Underline', icon: Sparkles },
+  { style: 'ink_bloom', name: 'Ink Bloom', icon: Palette },
+  { style: 'airflow', name: 'Airflow', icon: Wind },
   { style: 'none', name: 'None', icon: X },
 ];
 

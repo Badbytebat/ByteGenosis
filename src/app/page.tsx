@@ -30,7 +30,7 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FloatingCursorSelector from '@/components/floating-cursor-selector';
 
-export type CursorStyle = 'matrix' | 'text' | 'orb' | 'none' | 'spotlight' | 'ghost' | 'jello' | 'underline';
+export type CursorStyle = 'matrix' | 'text' | 'orb' | 'ghost' | 'jello' | 'underline' | 'ink_bloom' | 'airflow' | 'glitch' | 'starlight' | 'none';
 
 
 const SELECTION_WORDS = [
@@ -432,7 +432,7 @@ export default function HomePage() {
                     resumeUrl={data.resumeUrl}
                     editMode={editMode}
                     onUpload={handleResumeUpload}
-                    isUploading={isResumeUploading}
+                    isUploading={isUploading}
                     darkMode={darkMode}
                 />
                 <ContactSection
