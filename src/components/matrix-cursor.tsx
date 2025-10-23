@@ -58,13 +58,6 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
       
       // Style-specific animations
       switch(style) {
-          case 'spotlight':
-            const spotlight = document.getElementById('spotlight-overlay');
-            if (spotlight) {
-                spotlight.style.setProperty('--x', `${cursorPos.current.x}px`);
-                spotlight.style.setProperty('--y', `${cursorPos.current.y}px`);
-            }
-            break;
           case 'matrix':
               if (timestamp - lastTimestamp.current > 80 && !isInteractive) {
                   lastTimestamp.current = timestamp;
@@ -91,7 +84,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
     cleanup = () => {
         if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         document.documentElement.classList.remove('custom-cursor-active');
-        document.querySelectorAll('.matrix-cursor-particle, #main-cursor, #spotlight-overlay, .ghost-cursor').forEach(el => el.remove());
+        document.querySelectorAll('.matrix-cursor-particle, #main-cursor, .ghost-cursor').forEach(el => el.remove());
     };
     
 
@@ -105,7 +98,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
   // Effect for creating/destroying DOM elements for cursors
   useEffect(() => {
     // Clean up old elements
-    document.querySelectorAll('#main-cursor, #spotlight-overlay, .ghost-cursor').forEach(el => el.remove());
+    document.querySelectorAll('#main-cursor, .ghost-cursor').forEach(el => el.remove());
     
     if (style === 'none') return;
     
@@ -146,12 +139,6 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
                 mainCursor = document.createElement('div');
                 mainCursor.className = cn('underline-cursor', isInteractive && 'interactive');
             }
-            break;
-        case 'spotlight':
-            const spotlight = document.createElement('div');
-            spotlight.id = 'spotlight-overlay';
-            spotlight.className = cn('spotlight-overlay', darkMode ? 'dark' : 'light');
-            document.body.appendChild(spotlight);
             break;
         case 'ghost':
             if (darkMode) {
