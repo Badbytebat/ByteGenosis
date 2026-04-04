@@ -52,6 +52,7 @@ import { Button } from '@/components/ui/button';
 import FloatingCursorSelector from '@/components/floating-cursor-selector';
 import { PortfolioStarrySky } from '@/components/portfolio-starry-sky';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
+import { closestMatrixCta } from '@/lib/matrix-cursor-cta';
 
 export type CursorStyle = 'matrix' | 'text' | 'orb' | 'ghost' | 'jello' | 'underline' | 'ink_bloom' | 'aurora' | 'circuit_pulse' | 'starlight' | 'none';
 
@@ -149,25 +150,11 @@ export default function HomePage() {
     }
   }, [initialDataLoading, authLoading, user]);
 
-  // Matrix / text cursor: shuffle label only when entering a new interactive root (avoids spam + remount glitches).
+  // Matrix / text cursor: language label only on elements marked data-matrix-cta (card CTAs), not every link/input.
   React.useEffect(() => {
-    const findInteractiveRoot = (element: HTMLElement | null): HTMLElement | null => {
-      let el: HTMLElement | null = element;
-      while (el) {
-        const clickableTags = ['A', 'BUTTON', 'INPUT', 'TEXTAREA', 'SELECT'];
-        const isClickable =
-          clickableTags.includes(el.tagName) ||
-          el.onclick !== null ||
-          el.style.cursor === 'pointer';
-        if (isClickable) return el;
-        el = el.parentElement;
-      }
-      return null;
-    };
-
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const root = findInteractiveRoot(target);
+      const root = closestMatrixCta(target);
       if (root) {
         if (lastInteractiveRootRef.current === root) return;
         lastInteractiveRootRef.current = root;
@@ -713,6 +700,7 @@ export default function HomePage() {
                       />
                       <Button
                         type="button"
+                        data-matrix-cta
                         size="sm"
                         variant="secondary"
                         disabled={isResumeUploading}
@@ -720,11 +708,12 @@ export default function HomePage() {
                       >
                         {isResumeUploading ? 'Uploading…' : 'Upload resume (PDF)'}
                       </Button>
-                      <Button type="button" size="sm" variant="secondary" onClick={handleExportPortfolio}>
+                      <Button type="button" data-matrix-cta size="sm" variant="secondary" onClick={handleExportPortfolio}>
                         Export JSON
                       </Button>
                       <Button
                         type="button"
+                        data-matrix-cta
                         size="sm"
                         variant="secondary"
                         onClick={() => importInputRef.current?.click()}
@@ -738,22 +727,27 @@ export default function HomePage() {
                         className="hidden"
                         onChange={handleImportPortfolio}
                       />
-                      <Button type="button" size="sm" variant="outline" onClick={handleRevertSession}>
+                      <Button type="button" data-matrix-cta size="sm" variant="outline" onClick={handleRevertSession}>
                         Revert session
                       </Button>
                     </div>
                     <Button
                       type="button"
+                      data-matrix-cta
                       size="sm"
                       variant="outline"
                       onClick={() => setPreviewAsVisitor((p) => !p)}
                     >
                       {previewAsVisitor ? "Stop preview" : "Preview as visitor"}
                     </Button>
-                    <Button onClick={handleLogout}>Logout &amp; Exit Edit Mode</Button>
+                    <Button type="button" data-matrix-cta onClick={handleLogout}>
+                      Logout &amp; Exit Edit Mode
+                    </Button>
                   </>
                 ) : (
-                  <Button onClick={handleReturnToLogin}>Login to Edit</Button>
+                  <Button type="button" data-matrix-cta onClick={handleReturnToLogin}>
+                    Login to Edit
+                  </Button>
                 )}
               </div>
 

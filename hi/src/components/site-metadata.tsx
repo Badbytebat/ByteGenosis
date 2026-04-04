@@ -45,23 +45,78 @@ export default function SiteMetadata({ siteMeta, canonicalUrl }: Props) {
       }
       link.href = canonicalUrl.trim();
     }
+  }, [
+    siteMeta.title,
+    siteMeta.description,
+    siteMeta.ogImageUrl,
+    siteMeta.twitterSite,
+    canonicalUrl,
+  ]);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return;
     const fav = siteMeta.faviconUrl?.trim();
     const favLinkSel = 'link[rel="icon"][data-portfolio-favicon="1"]';
     const existingFav = document.querySelector(favLinkSel) as HTMLLinkElement | null;
+
     if (fav) {
-      let link = existingFav;
+      document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]').forEach((node) => {
+        if (!node.getAttribute("data-portfolio-favicon")) node.remove();
+      });
+
+      let link = document.querySelector(favLinkSel) as HTMLLinkElement | null;
       if (!link) {
         link = document.createElement("link");
         link.rel = "icon";
         link.setAttribute("data-portfolio-favicon", "1");
-        document.head.appendChild(link);
+        document.head.prepend(link);
       }
-      link.href = fav;
-    } else if (existingFav) {
-      existingFav.remove();
+
+      const pathOnly = fav.split(/[?#]/)[0] ?? fav;
+      const ext = pathOnly.split(".").pop()?.toLowerCase();
+      const mime =
+        ext === "svg"
+          ? "image/svg+xml"
+          : ext === "png"
+            ? "image/png"
+            : ext === "jpg" || ext === "jpeg"
+              ? "image/jpeg"
+              : ext === "webp"
+                ? "image/webp"
+                : ext === "ico"
+                  ? "image/x-icon"
+                  : "";
+      if (mime) link.type = mime;
+      else link.removeAttribute("type");
+
+      let href: string;
+      try {
+        const u = new URL(fav);
+        u.searchParams.set("cb", String(Date.now()));
+        href = u.toString();
+      } catch {
+        const sep = fav.includes("?") ? "&" : "?";
+        href = `${fav}${sep}cb=${Date.now()}`;
+      }
+      link.href = href;
+
+      let apple = document.querySelector(
+        'link[rel="apple-touch-icon"][data-portfolio-favicon="1"]'
+      ) as HTMLLinkElement | null;
+      if (!apple) {
+        apple = document.createElement("link");
+        apple.rel = "apple-touch-icon";
+        apple.setAttribute("data-portfolio-favicon", "1");
+        document.head.appendChild(apple);
+      }
+      apple.href = href;
+    } else {
+      existingFav?.remove();
+      document
+        .querySelectorAll('link[rel="apple-touch-icon"][data-portfolio-favicon="1"]')
+        .forEach((n) => n.remove());
     }
-  }, [siteMeta, canonicalUrl]);
+  }, [siteMeta.faviconUrl]);
 
   return null;
 }

@@ -69,7 +69,12 @@ const Header: React.FC<HeaderProps> = ({
     )}>
       {/* Left Side */}
       <div className="flex-shrink-0">
-        <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }} className="flex items-center gap-2 group">
+        <a
+          href="#home"
+          data-matrix-cta
+          onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}
+          className="flex items-center gap-2 group"
+        >
           {editMode ? (
             <Input 
               value={headerData.logoText} 
@@ -81,17 +86,19 @@ const Header: React.FC<HeaderProps> = ({
               {headerData.logoText}
             </span>
           )}
-          <LogoIcon className="group-hover:text-accent transition-colors duration-300" />
+          <img src="/rm.png"className="h-10 w-10 object-contain" />
         </a>
       </div>
 
       {/* Center Nav - Hidden on small screens */}
       <nav className="hidden md:flex items-center gap-2">
         {navItems.map((item) => (
-          <Button 
-            key={item} 
-            onClick={() => scrollToSection(item)} 
-            variant="ghost" 
+          <Button
+            type="button"
+            data-matrix-cta
+            key={item}
+            onClick={() => scrollToSection(item)}
+            variant="ghost"
             className="glass-effect capitalize nav-link-animate"
           >
             <span className="pointer-events-none">{item}</span>
@@ -106,6 +113,8 @@ const Header: React.FC<HeaderProps> = ({
           onValueChange={(v) => onThemePaletteChange(v as ThemePalette)}
         >
           <SelectTrigger
+            type="button"
+            data-matrix-cta
             className="h-9 w-[min(8.5rem,30vw)] shrink-0 text-[10px] sm:w-[158px] sm:text-xs"
             aria-label="Accent palette"
             title="Accent palette. Luxury (sun): semi-dark charcoal, platinum/silver borders on cards, gold buttons. Saved when editing."
@@ -125,7 +134,15 @@ const Header: React.FC<HeaderProps> = ({
             ))}
           </SelectContent>
         </Select>
-        <Button onClick={() => setDarkMode(!darkMode)} variant="ghost" size="icon" className="hover:bg-accent/20 transition-all" aria-label="Toggle theme">
+        <Button
+          type="button"
+          data-matrix-cta
+          onClick={() => setDarkMode(!darkMode)}
+          variant="ghost"
+          size="icon"
+          className="hover:bg-accent/20 transition-all"
+          aria-label="Toggle theme"
+        >
           {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
       </div>

@@ -105,6 +105,11 @@ export function PortfolioStarrySky({
   const nextCometAt = useRef(0);
   const timeRef = useRef(0);
   const sizeRef = useRef({ w: 0, h: 0 });
+  /** Avoid restarting the whole canvas when music toggles (that felt like a full page refresh). */
+  const musicPlayingRef = useRef(musicPlaying);
+  useEffect(() => {
+    musicPlayingRef.current = musicPlaying;
+  }, [musicPlaying]);
 
   const initStars = useCallback((w: number, h: number) => {
     const target = Math.min(420, Math.max(140, Math.floor((w * h) / 3800)));
@@ -254,7 +259,7 @@ export function PortfolioStarrySky({
           Math.sin(t * s.twSpeed + s.tw) * 1.2 -
           scroll * 0.004 * (s.layer + 1);
 
-        const musicPulse = musicPlaying
+        const musicPulse = musicPlayingRef.current
           ? 0.28 * (0.5 + 0.5 * Math.sin(t * 6.8 + s.tw * 3))
           : 0;
         const twinkle =
@@ -389,7 +394,7 @@ export function PortfolioStarrySky({
       ro.disconnect();
       window.removeEventListener("resize", resize);
     };
-  }, [darkMode, fullscreen, initStars, musicPlaying]);
+  }, [darkMode, fullscreen, initStars]);
 
   return (
     <div

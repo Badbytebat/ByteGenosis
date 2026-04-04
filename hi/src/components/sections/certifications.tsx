@@ -73,7 +73,7 @@ const AnimatedCertificationCard: React.FC<AnimatedCardProps> = ({ item, index, e
           
           {!editMode && item.link && (
             <a href={item.link} target="_blank" rel="noopener noreferrer" className={item.description ? 'mt-4 inline-block' : 'inline-block'}>
-              <Button variant="outline" className={cn("group", !darkMode && "light-btn")}>
+              <Button data-matrix-cta variant="outline" className={cn("group", !darkMode && "light-btn")}>
                 View Certificate <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </Button>
             </a>

@@ -75,6 +75,7 @@ export default function NotesSection({
                       <Link
                         href={`/notes/${encodeURIComponent(note.slug)}`}
                         className="hover:text-accent hover:underline"
+                        data-matrix-cta
                       >
                         {note.title}
                       </Link>

@@ -38,10 +38,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
       <div className="relative z-10 flex flex-col items-center">
         <CelestialEye darkMode={darkMode} />
         <Card className="w-full max-w-md bg-card/80 backdrop-blur-lg border-primary/20 shadow-xl shadow-primary/10 mt-[-40px]">
-          <Button 
-            onClick={() => setDarkMode(!darkMode)} 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            type="button"
+            data-matrix-cta
+            onClick={() => setDarkMode(!darkMode)}
+            variant="ghost"
+            size="icon"
             className="absolute top-4 right-4"
           >
             {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -86,7 +88,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                     className="pl-10" disabled={!isSupabaseConfigured}
                 />
               </div>
-              <Button type="submit" className="w-full animate-pulse-glow" disabled={!isSupabaseConfigured}>
+              <Button
+                type="submit"
+                data-matrix-cta
+                className="w-full animate-pulse-glow"
+                disabled={!isSupabaseConfigured}
+              >
                 Sign In
               </Button>
             </form>
@@ -98,6 +105,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             </div>
 
             <Button
+              type="button"
+              data-matrix-cta
               onClick={handleViewerMode}
               variant="outline"
               className={cn(

@@ -81,6 +81,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
           className="z-10 flex flex-col sm:flex-row gap-4 mt-10 justify-center"
         >
           <Button
+            type="button"
+            data-matrix-cta
             onClick={() => scrollToSection('projects')}
             className={cn(
                 "rounded-full text-base py-6 px-8",
@@ -92,6 +94,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
             View Portfolio
           </Button>
           <Button
+            type="button"
+            data-matrix-cta
             onClick={() => scrollToSection('resume')}
             variant="outline"
             className={cn(

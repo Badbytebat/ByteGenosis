@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import type { CursorStyle } from '@/app/page';
+import { closestMatrixCta } from '@/lib/matrix-cursor-cta';
 
 type MatrixCursorProps = {
   darkMode: boolean;
@@ -39,225 +40,118 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
   const isInteractiveRef = useRef(false);
   const [isInteractive, setIsInteractive] = useState(false);
   const isMouseDown = useRef(false);
+  /** Smoothed positions for ghost trail (index 0 snaps to cursor). */
+  const ghostSmoothedRef = useRef<{ x: number; y: number }[] | null>(null);
 
   useEffect(() => {
-    let cleanup = () => {};
+    if (style !== 'ghost') ghostSmoothedRef.current = null;
+  }, [style]);
 
-    const handleMouseMove = (e: MouseEvent) => {
-      cursorPos.current = { x: e.clientX, y: e.clientY };
-      const interactive = isInteractiveElement(e.target as HTMLElement);
-      isInteractiveRef.current = interactive;
-      setIsInteractive(interactive);
-    };
+  const cursorStructureKey =
+    style === 'none'
+      ? 'none'
+      : style === 'matrix' || style === 'text'
+        ? `${style}|${darkMode}|${isInteractive}`
+        : `${style}|${darkMode}`;
 
-    const handleMouseDown = () => { isMouseDown.current = true; };
-    const handleMouseUp = () => { isMouseDown.current = false; };
-    
-    // Set initial state
-    setIsInteractive(isInteractiveElement(document.elementFromPoint(cursorPos.current.x, cursorPos.current.y) as HTMLElement));
+  /* Create cursor DOM before the RAF loop runs so #main-cursor always exists on first frame. */
+  useEffect(() => {
+    document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => el.remove());
 
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-
-    // Activate custom cursor if not in edit mode and a style is selected
-    if (style !== 'none') {
-        document.documentElement.classList.add('custom-cursor-active');
-    } else {
-        document.documentElement.classList.remove('custom-cursor-active');
-        return;
+    if (style === 'none') {
+      return () => {
+        document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => el.remove());
+      };
     }
 
-    const animate = (timestamp: number) => {
-      // General cursor position update
-      const mainCursorEl = document.getElementById('main-cursor');
-      if (mainCursorEl) {
-        mainCursorEl.style.left = `${cursorPos.current.x}px`;
-        mainCursorEl.style.top = `${cursorPos.current.y}px`;
-        /* Light-mode (and matrix fallback) dots: hover / click feedback without remounting DOM. */
-        const tag = mainCursorEl.tagName;
-        if (tag === 'DIV') {
-          mainCursorEl.classList.toggle('interactive', isInteractiveRef.current);
-          mainCursorEl.classList.toggle('cursor-pressed', isMouseDown.current);
-        }
-        if (tag === 'SPAN' && mainCursorEl.classList.contains('cursor-text-label')) {
-          mainCursorEl.classList.toggle('interactive', isInteractiveRef.current);
-          mainCursorEl.classList.toggle('cursor-pressed', isMouseDown.current);
-        }
-      }
+    let mainCursor: HTMLElement | null = null;
 
-      // Style-specific animations
-      switch(style) {
-          case 'matrix':
-              if (
-                !reduceMotion &&
-                !isInteractiveRef.current &&
-                timestamp - lastMatrixSpawn.current > 80
-              ) {
-                  lastMatrixSpawn.current = timestamp;
-                  createMatrixParticle(cursorPos.current.x, cursorPos.current.y);
-              }
-              break;
-          case 'ghost': {
-            const ghostCursors = document.querySelectorAll('.ghost-cursor');
-            const { x, y } = cursorPos.current;
-            ghostCursors.forEach((cursor, index) => {
-                const el = cursor as HTMLElement;
-                el.style.left = `${x - index * 5}px`;
-                el.style.top = `${y - index * 5}px`;
-            });
-            break;
+    switch (style) {
+      case 'matrix':
+        if (isInteractive) {
+          mainCursor = document.createElement('span');
+          mainCursor.className = 'cursor-text-label';
+          mainCursor.textContent = cursorText || '·';
+          mainCursor.style.setProperty('--cursor-glow-color', color);
+        } else if (!darkMode) {
+          mainCursor = document.createElement('div');
+          mainCursor.className = 'light-cursor';
+        }
+        /* Dark + not on CTA: matrix trail only — no center dot. */
+        break;
+      case 'text':
+        mainCursor = document.createElement('span');
+        mainCursor.className = 'cursor-text-label';
+        if (isInteractive && cursorText) {
+          mainCursor.textContent = cursorText;
+          mainCursor.style.setProperty('--cursor-glow-color', color);
+        }
+        break;
+      case 'orb':
+        if (!darkMode) {
+          mainCursor = document.createElement('div');
+          mainCursor.className = 'light-cursor';
+        }
+        break;
+      case 'jello':
+        if (!darkMode) {
+          mainCursor = document.createElement('div');
+          mainCursor.className = 'jello-cursor';
+        }
+        break;
+      case 'underline':
+        if (!darkMode) {
+          mainCursor = document.createElement('div');
+          mainCursor.className = 'underline-cursor';
+        }
+        break;
+      case 'ghost':
+        for (let i = 0; i < 3; i++) {
+          const ghost = document.createElement('div');
+          ghost.className = 'ghost-cursor';
+          document.body.appendChild(ghost);
+        }
+        break;
+      case 'aurora':
+        if (!darkMode) {
+          mainCursor = document.createElement('div');
+          mainCursor.id = 'aurora-cursor-base';
+        }
+        break;
+      case 'circuit_pulse':
+        if (darkMode) {
+          mainCursor = document.createElement('div');
+          mainCursor.id = 'circuit-pulse-base';
+        }
+        break;
+      case 'starlight':
+        if (darkMode) {
+          const wrap = document.createElement('div');
+          wrap.id = 'starlight-cursor-wrap';
+          wrap.className = 'starlight-cursor-wrap';
+          const core = document.createElement('div');
+          core.className = 'starlight-core';
+          wrap.appendChild(core);
+          for (let i = 0; i < 3; i++) {
+            const orb = document.createElement('div');
+            orb.className = 'starlight-orb';
+            wrap.appendChild(orb);
           }
-        case 'ink_bloom':
-            if (!reduceMotion && timestamp - lastInkSpawn.current > 60) {
-                lastInkSpawn.current = timestamp;
-                createInkBloomParticle(cursorPos.current.x, cursorPos.current.y);
-            }
-            break;
-        case 'aurora':
-             if (!reduceMotion && timestamp - lastAuroraSpawn.current > 50) {
-                lastAuroraSpawn.current = timestamp;
-                createAuroraParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
-            }
-            break;
-        case 'circuit_pulse':
-             if (timestamp - lastCircuitSpawn.current > 100) {
-                lastCircuitSpawn.current = timestamp;
-                createCircuitPulseParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
-            }
-            break;
-        case 'starlight':
-            const starlightWrap = document.getElementById('starlight-cursor-wrap');
-            if (starlightWrap) {
-                starlightWrap.style.left = `${cursorPos.current.x}px`;
-                starlightWrap.style.top = `${cursorPos.current.y}px`;
-                if (isMouseDown.current) {
-                    starlightWrap.classList.add('clicked');
-                } else {
-                    starlightWrap.classList.remove('clicked');
-                }
-            }
-            break;
-      }
-        
-      animationFrameId.current = requestAnimationFrame(animate);
-    };
+          document.body.appendChild(wrap);
+        }
+        break;
+    }
 
-    animationFrameId.current = requestAnimationFrame(animate);
-    
-    cleanup = () => {
-        if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
-        document.documentElement.classList.remove('custom-cursor-active');
-        document.querySelectorAll('.matrix-cursor-particle, #main-cursor, .ghost-cursor, .ink-bloom-particle, .aurora-particle, .circuit-pulse-particle, #starlight-cursor-wrap').forEach(el => el.remove());
-    };
-    
+    if (mainCursor) {
+      mainCursor.id = 'main-cursor';
+      document.body.appendChild(mainCursor);
+    }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mousedown', handleMouseDown);
-      window.removeEventListener('mouseup', handleMouseUp);
-      cleanup();
+      document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => el.remove());
     };
-  }, [style, reduceMotion]);
+  }, [cursorStructureKey]);
 
-
-  // Effect for creating/destroying DOM elements for cursors
-  useEffect(() => {
-    // Clean up old elements
-    document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach(el => el.remove());
-    
-    if (style === 'none') return;
-    
-    let mainCursor: HTMLElement | null = null;
-    
-    // Create elements based on style
-    switch(style) {
-        case 'matrix':
-            if (isInteractive) {
-                mainCursor = document.createElement('span');
-                mainCursor.className = 'cursor-text-label';
-                mainCursor.textContent = cursorText || '·';
-                mainCursor.style.setProperty('--cursor-glow-color', color);
-            } else if (!darkMode) {
-                mainCursor = document.createElement('div');
-                mainCursor.className = 'light-cursor';
-            } else {
-                mainCursor = document.createElement('div');
-                mainCursor.className = 'matrix-fallback-dot';
-            }
-            break;
-        case 'text':
-            mainCursor = document.createElement('span');
-            mainCursor.className = 'cursor-text-label';
-            if (isInteractive && cursorText) {
-                mainCursor.textContent = cursorText;
-                mainCursor.style.setProperty('--cursor-glow-color', color);
-            }
-            break;
-        case 'orb':
-            if (!darkMode) {
-                mainCursor = document.createElement('div');
-                mainCursor.className = 'light-cursor';
-            }
-            break;
-        case 'jello':
-             if (!darkMode) {
-                mainCursor = document.createElement('div');
-                mainCursor.className = 'jello-cursor';
-            }
-            break;
-        case 'underline':
-             if (!darkMode) {
-                mainCursor = document.createElement('div');
-                mainCursor.className = 'underline-cursor';
-            }
-            break;
-        case 'ghost':
-            for(let i = 0; i < 3; i++) {
-                const ghost = document.createElement('div');
-                ghost.className = 'ghost-cursor';
-                document.body.appendChild(ghost);
-            }
-            break;
-        case 'aurora':
-             if (!darkMode) {
-                mainCursor = document.createElement('div');
-                mainCursor.id = 'aurora-cursor-base';
-            }
-            break;
-        case 'circuit_pulse':
-            if (darkMode) {
-                mainCursor = document.createElement('div');
-                mainCursor.id = 'circuit-pulse-base';
-            }
-            break;
-        case 'starlight':
-            if (darkMode) {
-                const wrap = document.createElement('div');
-                wrap.id = 'starlight-cursor-wrap';
-                wrap.className = 'starlight-cursor-wrap';
-                const core = document.createElement('div');
-                core.className = 'starlight-core';
-                wrap.appendChild(core);
-                for(let i=0; i<3; i++) {
-                    const orb = document.createElement('div');
-                    orb.className = 'starlight-orb';
-                    wrap.appendChild(orb);
-                }
-                document.body.appendChild(wrap);
-            }
-            break;
-    }
-    
-    if (mainCursor) {
-        mainCursor.id = 'main-cursor';
-        document.body.appendChild(mainCursor);
-    }
-    
-  }, [style, darkMode, isInteractive]);
-
-  // Keep label text / glow in sync without tearing down #main-cursor (avoids matrix trail / RAF glitches).
   useEffect(() => {
     if (style === 'none') return;
     const el = document.getElementById('main-cursor');
@@ -274,6 +168,157 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
       el.style.setProperty('--cursor-glow-color', color);
     }
   }, [cursorText, color, style, isInteractive]);
+
+  useEffect(() => {
+    let cleanup = () => {};
+
+    const handleMouseMove = (e: MouseEvent) => {
+      cursorPos.current = { x: e.clientX, y: e.clientY };
+      const target = e.target as HTMLElement;
+      const interactive =
+        style === 'matrix' || style === 'text'
+          ? !!closestMatrixCta(target)
+          : isInteractiveElement(target);
+      isInteractiveRef.current = interactive;
+      setIsInteractive((prev) => (prev === interactive ? prev : interactive));
+    };
+
+    const handleMouseDown = () => {
+      isMouseDown.current = true;
+    };
+    const handleMouseUp = () => {
+      isMouseDown.current = false;
+    };
+
+    {
+      const under = document.elementFromPoint(cursorPos.current.x, cursorPos.current.y) as HTMLElement | null;
+      const initial =
+        style === 'matrix' || style === 'text' ? !!closestMatrixCta(under) : isInteractiveElement(under);
+      setIsInteractive(initial);
+    }
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    if (style === 'none') {
+      document.documentElement.classList.remove('custom-cursor-active');
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mousedown', handleMouseDown);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+
+    document.documentElement.classList.add('custom-cursor-active');
+
+    const animate = (timestamp: number) => {
+      const mainCursorEl = document.getElementById('main-cursor');
+      if (mainCursorEl) {
+        mainCursorEl.style.left = `${cursorPos.current.x}px`;
+        mainCursorEl.style.top = `${cursorPos.current.y}px`;
+        const tag = mainCursorEl.tagName;
+        if (tag === 'DIV') {
+          mainCursorEl.classList.toggle('interactive', isInteractiveRef.current);
+          mainCursorEl.classList.toggle('cursor-pressed', isMouseDown.current);
+        }
+        if (tag === 'SPAN' && mainCursorEl.classList.contains('cursor-text-label')) {
+          mainCursorEl.classList.toggle('interactive', isInteractiveRef.current);
+          mainCursorEl.classList.toggle('cursor-pressed', isMouseDown.current);
+        }
+      }
+
+      switch (style) {
+        case 'matrix':
+          if (
+            !reduceMotion &&
+            !isInteractiveRef.current &&
+            timestamp - lastMatrixSpawn.current > 80
+          ) {
+            lastMatrixSpawn.current = timestamp;
+            createMatrixParticle(cursorPos.current.x, cursorPos.current.y);
+          }
+          break;
+        case 'ghost': {
+          const ghostCursors = document.querySelectorAll('.ghost-cursor');
+          const n = ghostCursors.length;
+          if (n === 0) break;
+          const { x, y } = cursorPos.current;
+          let smooth = ghostSmoothedRef.current;
+          if (!smooth || smooth.length !== n) {
+            smooth = Array.from({ length: n }, () => ({ x, y }));
+            ghostSmoothedRef.current = smooth;
+          }
+          const lag = 0.34;
+          ghostCursors.forEach((cursor, index) => {
+            const el = cursor as HTMLElement;
+            const tx = x - index * 8;
+            const ty = y - index * 5;
+            if (index === 0) {
+              smooth![0].x = tx;
+              smooth![0].y = ty;
+            } else {
+              smooth![index].x += (tx - smooth![index].x) * lag;
+              smooth![index].y += (ty - smooth![index].y) * lag;
+            }
+            el.style.left = `${smooth![index].x}px`;
+            el.style.top = `${smooth![index].y}px`;
+          });
+          break;
+        }
+        case 'ink_bloom':
+          if (!reduceMotion && timestamp - lastInkSpawn.current > 60) {
+            lastInkSpawn.current = timestamp;
+            createInkBloomParticle(cursorPos.current.x, cursorPos.current.y);
+          }
+          break;
+        case 'aurora':
+          if (!reduceMotion && timestamp - lastAuroraSpawn.current > 50) {
+            lastAuroraSpawn.current = timestamp;
+            createAuroraParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
+          }
+          break;
+        case 'circuit_pulse':
+          if (timestamp - lastCircuitSpawn.current > 100) {
+            lastCircuitSpawn.current = timestamp;
+            createCircuitPulseParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
+          }
+          break;
+        case 'starlight': {
+          const starlightWrap = document.getElementById('starlight-cursor-wrap');
+          if (starlightWrap) {
+            starlightWrap.style.left = `${cursorPos.current.x}px`;
+            starlightWrap.style.top = `${cursorPos.current.y}px`;
+            if (isMouseDown.current) {
+              starlightWrap.classList.add('clicked');
+            } else {
+              starlightWrap.classList.remove('clicked');
+            }
+          }
+          break;
+        }
+      }
+
+      animationFrameId.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameId.current = requestAnimationFrame(animate);
+
+    cleanup = () => {
+      if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+      document.documentElement.classList.remove('custom-cursor-active');
+      document
+        .querySelectorAll('.matrix-cursor-particle, .ink-bloom-particle, .aurora-particle, .circuit-pulse-particle')
+        .forEach((el) => el.remove());
+    };
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      cleanup();
+    };
+  }, [style, reduceMotion]);
 
   return null;
 };

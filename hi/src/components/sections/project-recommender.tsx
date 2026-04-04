@@ -98,7 +98,7 @@ const ProjectRecommender: React.FC<Props> = ({ darkMode }) => {
                                 onChange={(e) => setSkills(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleRecommend()}
                             />
-                            <Button onClick={handleRecommend} disabled={isLoading}>
+                            <Button type="button" data-matrix-cta onClick={handleRecommend} disabled={isLoading}>
                                 {isLoading ? (
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                                 ) : (

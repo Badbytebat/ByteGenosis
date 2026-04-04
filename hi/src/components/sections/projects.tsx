@@ -94,12 +94,12 @@ const AnimatedProjectCard: React.FC<AnimatedCardProps> = ({ item, index, editMod
           ) : (
             <div className="flex w-full flex-wrap gap-2">
               <Link href={getProjectPath(item)}>
-                <Button variant="secondary" className={cn(!darkMode && "light-btn")}>
+                <Button data-matrix-cta variant="secondary" className={cn(!darkMode && "light-btn")}>
                   Case study
                 </Button>
               </Link>
               <a href={item.link} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className={cn("group", !darkMode && "light-btn")}>
+                <Button data-matrix-cta variant="outline" className={cn("group", !darkMode && "light-btn")}>
                   View Project <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>
               </a>

@@ -1,8 +1,9 @@
 "use client";
 
 import { getSupabaseBrowserClient } from "./supabase/client";
+import { PORTFOLIO_STORAGE_BUCKET } from "./supabase-storage-path";
 
-const BUCKET = "portfolio-files";
+const BUCKET = PORTFOLIO_STORAGE_BUCKET;
 /** PDFs and images for resume + about photo; matches your ~50 MB cap. */
 export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 

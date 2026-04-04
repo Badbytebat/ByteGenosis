@@ -94,6 +94,8 @@ const FloatingCursorSelector: React.FC<Props> = ({ darkMode, selectedStyle, onSt
                             whileTap={{ scale: 0.95 }}
                         >
                             <button
+                                type="button"
+                                data-matrix-cta
                                 onClick={() => {
                                     onStyleChange(option.style)
                                     setIsOpen(false);
@@ -118,6 +120,8 @@ const FloatingCursorSelector: React.FC<Props> = ({ darkMode, selectedStyle, onSt
         {/* Main Floating Button */}
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
           <Button
+            type="button"
+            data-matrix-cta
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
               "rounded-full w-16 h-16 shadow-2xl",

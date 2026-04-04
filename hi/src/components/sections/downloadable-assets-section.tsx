@@ -91,6 +91,7 @@ export default function DownloadableAssetsSection({
                     href={asset.url}
                     target="_blank"
                     rel="noopener noreferrer"
+                    data-matrix-cta
                     className="flex flex-1 items-center gap-2 font-medium hover:text-accent"
                   >
                     <Download className="h-4 w-4 shrink-0" />
