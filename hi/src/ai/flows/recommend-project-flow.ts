@@ -43,7 +43,7 @@ const recommendProjectFlow = ai.defineFlow(
     outputSchema: RecommendProjectOutputSchema,
   },
   async (input) => {
-    const { output } = await ai.generate({
+    const response = await ai.generate({
       prompt: `You are an expert career coach for software developers.
         Based on the following skills, suggest a portfolio project that would be impressive.
         
@@ -57,6 +57,17 @@ const recommendProjectFlow = ai.defineFlow(
       },
     });
 
-    return output!;
+    const out = response.output;
+    if (out?.title && out.description) {
+      return out;
+    }
+
+    return {
+      title: "Portfolio showcase app",
+      description:
+        "Build a polished full-stack app that highlights your skills. The AI could not format a structured reply; check GEMINI_API_KEY and try again.",
+      technologies: ["Next.js", "TypeScript"],
+      difficulty: "Intermediate" as const,
+    };
   }
 );

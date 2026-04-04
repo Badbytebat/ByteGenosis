@@ -2,13 +2,13 @@
 "use client";
 
 import React from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HeroData } from '@/lib/types';
+import { DURATION_ENTER, EASE_OUT, SPRING_UI } from '@/lib/motion-presets';
 
 type HeroSectionProps = {
   data: HeroData;
@@ -20,35 +20,18 @@ type HeroSectionProps = {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scrollToSection, darkMode }) => {
   const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
+    initial: { opacity: 0, y: 14 },
     animate: { 
       opacity: 1, 
       y: 0,
       transition: darkMode 
-        ? { duration: 0.8, ease: "easeInOut" }
-        : { type: "spring", stiffness: 100, damping: 20 }
+        ? { duration: DURATION_ENTER, ease: EASE_OUT }
+        : SPRING_UI
     },
   };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <div className={cn(
-            "absolute inset-0",
-            darkMode ? "bg-gradient-to-b from-black via-black/80 to-background" : "bg-gradient-to-b from-background/50 to-background"
-        )}></div>
-        {darkMode && (
-          <Image 
-            src="https://placehold.co/1920x1080/0d0d0d/0d0d0d.png" 
-            alt="Night Skyline" 
-            data-ai-hint="night skyline"
-            layout="fill" 
-            objectFit="cover" 
-            className="opacity-20"
-          />
-        )}
-      </div>
-
       <div className="relative z-10 text-center px-6">
         <div className="max-w-4xl mx-auto">
           {editMode ? (
@@ -83,7 +66,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
-                transition={{ delay: 0.2 }}
+                transition={{ delay: 0.1 }}
                 className="text-xl md:text-2xl text-foreground/80 font-light"
               >
                 {data.subtitle}
@@ -96,7 +79,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
           variants={fadeInUp}
           initial="initial"
           animate="animate"
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.2 }}
           className="z-10 flex flex-col sm:flex-row gap-4 mt-10 justify-center"
         >
           <Button

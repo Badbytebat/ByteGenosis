@@ -10,6 +10,8 @@ type MatrixCursorProps = {
   cursorText: string;
   color: string;
   style: CursorStyle;
+  /** When true, skip particle spam (accessibility). */
+  reduceMotion?: boolean;
 };
 
 const isInteractiveElement = (element: HTMLElement | null): boolean => {
@@ -20,10 +22,22 @@ const isInteractiveElement = (element: HTMLElement | null): boolean => {
 };
 
 
-const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color, style }) => {
+const MatrixCursor: React.FC<MatrixCursorProps> = ({
+  darkMode,
+  cursorText,
+  color,
+  style,
+  reduceMotion = false,
+}) => {
   const animationFrameId = useRef<number>();
-  const lastTimestamp = useRef(0);
+  /** Throttle spawns per effect — do not share one timestamp across styles. */
+  const lastMatrixSpawn = useRef(0);
+  const lastInkSpawn = useRef(0);
+  const lastAuroraSpawn = useRef(0);
+  const lastCircuitSpawn = useRef(0);
   const cursorPos = useRef({ x: 0, y: 0 });
+  /** Ref avoids restarting the RAF loop on every hover (was causing jank). */
+  const isInteractiveRef = useRef(false);
   const [isInteractive, setIsInteractive] = useState(false);
   const isMouseDown = useRef(false);
 
@@ -32,7 +46,9 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
 
     const handleMouseMove = (e: MouseEvent) => {
       cursorPos.current = { x: e.clientX, y: e.clientY };
-      setIsInteractive(isInteractiveElement(e.target as HTMLElement));
+      const interactive = isInteractiveElement(e.target as HTMLElement);
+      isInteractiveRef.current = interactive;
+      setIsInteractive(interactive);
     };
 
     const handleMouseDown = () => { isMouseDown.current = true; };
@@ -65,36 +81,40 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
       // Style-specific animations
       switch(style) {
           case 'matrix':
-              if (timestamp - lastTimestamp.current > 80 && !isInteractive) {
-                  lastTimestamp.current = timestamp;
+              if (
+                !reduceMotion &&
+                !isInteractiveRef.current &&
+                timestamp - lastMatrixSpawn.current > 42
+              ) {
+                  lastMatrixSpawn.current = timestamp;
                   createMatrixParticle(cursorPos.current.x, cursorPos.current.y);
               }
               break;
-          case 'ghost':
+          case 'ghost': {
             const ghostCursors = document.querySelectorAll('.ghost-cursor');
+            const { x, y } = cursorPos.current;
             ghostCursors.forEach((cursor, index) => {
-                const typedCursor = cursor as HTMLElement;
-                setTimeout(() => {
-                     typedCursor.style.left = `${cursorPos.current.x}px`;
-                     typedCursor.style.top = `${cursorPos.current.y}px`;
-                }, index * 20)
+                const el = cursor as HTMLElement;
+                el.style.left = `${x - index * 5}px`;
+                el.style.top = `${y - index * 5}px`;
             });
             break;
+          }
         case 'ink_bloom':
-            if (timestamp - lastTimestamp.current > 60) {
-                lastTimestamp.current = timestamp;
+            if (!reduceMotion && timestamp - lastInkSpawn.current > 48) {
+                lastInkSpawn.current = timestamp;
                 createInkBloomParticle(cursorPos.current.x, cursorPos.current.y);
             }
             break;
         case 'aurora':
-             if (timestamp - lastTimestamp.current > 50) {
-                lastTimestamp.current = timestamp;
+             if (!reduceMotion && timestamp - lastAuroraSpawn.current > 40) {
+                lastAuroraSpawn.current = timestamp;
                 createAuroraParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
             }
             break;
         case 'circuit_pulse':
-             if (timestamp - lastTimestamp.current > 100) {
-                lastTimestamp.current = timestamp;
+             if (timestamp - lastCircuitSpawn.current > 72) {
+                lastCircuitSpawn.current = timestamp;
                 createCircuitPulseParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
             }
             break;
@@ -130,7 +150,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
       window.removeEventListener('mouseup', handleMouseUp);
       cleanup();
     };
-  }, [style, isInteractive]); // Rerun effect if style changes
+  }, [style, reduceMotion]);
 
 
   // Effect for creating/destroying DOM elements for cursors
@@ -145,10 +165,10 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({ darkMode, cursorText, color
     // Create elements based on style
     switch(style) {
         case 'matrix':
-            if (isInteractive && cursorText) {
+            if (isInteractive) {
                 mainCursor = document.createElement('span');
                 mainCursor.className = 'cursor-text-label';
-                mainCursor.textContent = cursorText;
+                mainCursor.textContent = cursorText || '·';
                 mainCursor.style.setProperty('--cursor-glow-color', color);
             }
             break;

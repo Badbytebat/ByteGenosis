@@ -19,6 +19,10 @@ export interface Project {
   description: string;
   tags: string[];
   link: string;
+  /** URL segment for /projects/[slug] case-study page; auto-derived from title if empty. */
+  slug?: string;
+  /** Optional long-form write-up shown on the case-study page. */
+  caseStudyBody?: string;
 }
 
 export interface Qualification {
@@ -56,6 +60,42 @@ export interface AboutData {
   description3: string;
 }
 
+/** Editable AI chat settings (saved with portfolio JSON). */
+export interface AiAssistantSettings {
+  /** Main instructions for the floating chatbot (persona + rules). */
+  instructions: string;
+  /** Extra free-form context about you (tone, goals, facts not in other sections). */
+  extraDetails: string;
+}
+
+/** SEO / sharing defaults (also synced to document title & meta from the client). */
+export interface SiteMeta {
+  title: string;
+  description: string;
+  /** Absolute or site-relative image URL for Open Graph / Twitter cards. */
+  ogImageUrl?: string;
+  twitterSite?: string;
+}
+
+/** Short blog-style note (MDX-free; plain text / markdown-friendly body). */
+export interface NotePost {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  publishedAt: string;
+}
+
+export interface DownloadableAsset {
+  id: number;
+  label: string;
+  url: string;
+}
+
+/** Extra color palettes beyond the default dark/light pair. */
+export type ThemePalette = 'default' | 'midnight' | 'ocean' | 'paper';
+
 export interface PortfolioData {
   header: HeaderData;
   hero: HeroData;
@@ -66,4 +106,10 @@ export interface PortfolioData {
   qualifications: Qualification[];
   contact: ContactMethod[];
   resumeUrl: string;
+  aiAssistant: AiAssistantSettings;
+  siteMeta: SiteMeta;
+  notes: NotePost[];
+  downloadableAssets: DownloadableAsset[];
+  /** Visual theme: dark/light plus optional palette (saved with portfolio). */
+  themePalette: ThemePalette;
 }

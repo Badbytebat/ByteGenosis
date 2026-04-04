@@ -6,8 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sun, Moon } from 'lucide-react';
 import LogoIcon from './logo-icon';
-import type { HeaderData } from '@/lib/types';
+import type { HeaderData, ThemePalette } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 type HeaderProps = {
   darkMode: boolean;
@@ -16,11 +23,43 @@ type HeaderProps = {
   headerData: HeaderData;
   editMode: boolean;
   onUpdate: (field: keyof HeaderData, value: string) => void;
-  isLoggedIn: boolean;
+  showNotesNav: boolean;
+  showDownloadsNav: boolean;
+  themePalette: ThemePalette;
+  onThemePaletteChange: (palette: ThemePalette) => void;
 };
 
-const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, scrollToSection, headerData, editMode, onUpdate, isLoggedIn }) => {
-  const navItems = ['about', 'experience', 'skills', 'projects', 'education', 'certifications', 'resume', 'contact'];
+const PALETTE_OPTIONS: { value: ThemePalette; label: string }[] = [
+  { value: 'default', label: 'Palette: default' },
+  { value: 'midnight', label: 'Palette: midnight' },
+  { value: 'ocean', label: 'Palette: ocean' },
+  { value: 'paper', label: 'Palette: paper' },
+];
+
+const Header: React.FC<HeaderProps> = ({
+  darkMode,
+  setDarkMode,
+  scrollToSection,
+  headerData,
+  editMode,
+  onUpdate,
+  showNotesNav,
+  showDownloadsNav,
+  themePalette,
+  onThemePaletteChange,
+}) => {
+  const navItems = [
+    'about',
+    'experience',
+    'skills',
+    'projects',
+    ...(showNotesNav ? (['notes'] as const) : []),
+    'education',
+    'certifications',
+    ...(showDownloadsNav ? (['downloads'] as const) : []),
+    'resume',
+    'contact',
+  ];
 
   return (
     <header className={cn(
@@ -60,7 +99,22 @@ const Header: React.FC<HeaderProps> = ({ darkMode, setDarkMode, scrollToSection,
       </nav>
       
       {/* Right Side */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <Select
+          value={themePalette}
+          onValueChange={(v) => onThemePaletteChange(v as ThemePalette)}
+        >
+          <SelectTrigger className="h-9 w-[min(7rem,22vw)] shrink-0 text-[10px] sm:w-[140px] sm:text-xs" aria-label="Color palette">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PALETTE_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value} className="text-xs">
+                {o.label.replace('Palette: ', '')}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button onClick={() => setDarkMode(!darkMode)} variant="ghost" size="icon" className="hover:bg-accent/20 transition-all" aria-label="Toggle theme">
           {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>

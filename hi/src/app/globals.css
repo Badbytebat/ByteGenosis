@@ -70,4 +70,23 @@
     @apply bg-background text-foreground;
     overflow-x: hidden;
   }
+
+  /* Optional palettes (see Header + portfolio `themePalette`) */
+  html[data-palette="midnight"].dark {
+    --accent: 280 45% 58%;
+    --primary: 250 35% 42%;
+    --ring: 280 45% 58%;
+  }
+  html[data-palette="ocean"].dark {
+    --accent: 185 70% 52%;
+    --primary: 205 55% 38%;
+    --ring: 185 70% 52%;
+  }
+  html[data-palette="paper"].light {
+    --background: 42 32% 96%;
+    --foreground: 28 20% 18%;
+    --card: 40 28% 98%;
+    --muted: 38 18% 90%;
+    --border: 35 15% 82%;
+  }
 }

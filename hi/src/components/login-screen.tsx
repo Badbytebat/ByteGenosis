@@ -18,7 +18,7 @@ type LoginScreenProps = {
   setPassword: (password: string) => void;
   handleSignIn: (e: React.FormEvent) => Promise<void>;
   handleViewerMode: () => void;
-  isFirebaseConfigured: boolean;
+  isSupabaseConfigured: boolean;
   darkMode: boolean;
   setDarkMode: (dark: boolean) => void;
 };
@@ -28,11 +28,11 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
   password, setPassword,
   handleSignIn,
   handleViewerMode,
-  isFirebaseConfigured,
+  isSupabaseConfigured,
   darkMode, setDarkMode
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background overflow-hidden transition-colors duration-500">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background overflow-hidden transition-colors duration-300 ease-out">
       <PixelArtBackground darkMode={darkMode} />
       
       <div className="relative z-10 flex flex-col items-center">
@@ -57,13 +57,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!isFirebaseConfigured && (
+            {!isSupabaseConfigured && (
               <div className="p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/50 flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                 <div>
-                  <p className="font-bold">Firebase Not Configured</p>
+                  <p className="font-bold">Supabase Not Configured</p>
                   <p className="text-xs">
-                    Add your Firebase credentials to the <code>.env.local</code> file and restart the server. Authentication is disabled.
+                    In <code>hi/.env.local</code>, set <code>NEXT_PUBLIC_SUPABASE_URL</code> to your real Project URL from Supabase (Settings → API), not the <code>YOUR_PROJECT_REF</code> template. Set <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> to the anon / publishable key. Then restart <code>npm run dev</code>.
                   </p>
                 </div>
               </div>
@@ -75,7 +75,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                 <Input
                     type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email" required autoComplete="email"
-                    className="pl-10" disabled={!isFirebaseConfigured}
+                    className="pl-10" disabled={!isSupabaseConfigured}
                 />
               </div>
               <div className="relative">
@@ -83,10 +83,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
                 <Input
                     type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password" required autoComplete="current-password"
-                    className="pl-10" disabled={!isFirebaseConfigured}
+                    className="pl-10" disabled={!isSupabaseConfigured}
                 />
               </div>
-              <Button type="submit" className="w-full animate-pulse-glow" disabled={!isFirebaseConfigured}>
+              <Button type="submit" className="w-full animate-pulse-glow" disabled={!isSupabaseConfigured}>
                 Sign In
               </Button>
             </form>

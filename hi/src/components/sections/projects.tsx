@@ -2,8 +2,10 @@
 "use client";
 
 import { useRef } from 'react';
+import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import type { Project } from '@/lib/types';
+import { getProjectPath } from '@/lib/project-path';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { DURATION_ENTER, EASE_OUT, SPRING_UI, STAGGER_CHILD } from '@/lib/motion-presets';
 
 type AnimatedCardProps = {
   item: Project;
@@ -26,18 +29,18 @@ const AnimatedProjectCard: React.FC<AnimatedCardProps> = ({ item, index, editMod
   const isInView = useInView(ref, { once: false, amount: 0.2 });
 
   const transition = darkMode 
-    ? { duration: 0.8, delay: index * 0.1, ease: "easeOut" } 
-    : { type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 };
+    ? { duration: DURATION_ENTER, delay: index * STAGGER_CHILD, ease: EASE_OUT } 
+    : { ...SPRING_UI, delay: index * STAGGER_CHILD };
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 22 }}
       transition={transition}
     >
       <Card className={cn(
-        "flex flex-col h-full transition-all duration-300",
+        "flex flex-col h-full transition-all duration-200 ease-out",
         darkMode
           ? "bg-card/50 border-primary/20 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-1"
           : "bg-card border light-card"
@@ -67,20 +70,42 @@ const AnimatedProjectCard: React.FC<AnimatedCardProps> = ({ item, index, editMod
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between items-center">
+        <CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
           {editMode ? (
             <>
-              <Input value={item.link} onChange={(e) => handleUpdate(item.id, 'link', e.target.value)} placeholder="Link" />
+              <div className="flex w-full flex-col gap-2">
+                <Input
+                  value={item.slug ?? ''}
+                  onChange={(e) => handleUpdate(item.id, 'slug', e.target.value)}
+                  placeholder="URL slug (case-study page)"
+                  className="font-mono text-xs"
+                />
+                <Textarea
+                  value={item.caseStudyBody ?? ''}
+                  onChange={(e) => handleUpdate(item.id, 'caseStudyBody', e.target.value)}
+                  placeholder="Optional long case study (shown on /projects/your-slug)"
+                  rows={4}
+                  className="text-sm"
+                />
+                <Input value={item.link} onChange={(e) => handleUpdate(item.id, 'link', e.target.value)} placeholder="External link" />
+              </div>
               <Button variant="destructive" size="icon" onClick={() => deleteEntry('projects', item.id)} className="ml-2 flex-shrink-0">
                 <Trash2 className="w-4 h-4" />
               </Button>
             </>
           ) : (
-            <a href={item.link} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className={cn("group", !darkMode && "light-btn")}>
-                View Project <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              </Button>
-            </a>
+            <div className="flex w-full flex-wrap gap-2">
+              <Link href={getProjectPath(item)}>
+                <Button variant="secondary" className={cn(!darkMode && "light-btn")}>
+                  Case study
+                </Button>
+              </Link>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className={cn("group", !darkMode && "light-btn")}>
+                  View Project <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </Button>
+              </a>
+            </div>
           )}
         </CardFooter>
       </Card>

@@ -1,5 +1,6 @@
 
 import type { PortfolioData } from './types';
+import { DEFAULT_AI_CHAT_INSTRUCTIONS } from './ai-defaults';
 
 export const defaultData: PortfolioData = {
   header: {
@@ -67,7 +68,7 @@ export const defaultData: PortfolioData = {
       id: 2,
       title: "Portfolio Website",
       description: "This very website, built with Next.js and Tailwind CSS, showcasing my skills and experience. All data is managed via Firestore.",
-      tags: ["Next.js", "React", "Tailwind CSS", "Firebase"],
+      tags: ["Next.js", "React", "Tailwind CSS", "Supabase"],
       link: "#"
     }
   ],
@@ -230,4 +231,18 @@ export const defaultData: PortfolioData = {
     }
   ],
   resumeUrl: "/resume.pdf",
+  aiAssistant: {
+    instructions: DEFAULT_AI_CHAT_INSTRUCTIONS,
+    extraDetails: "",
+  },
+  siteMeta: {
+    title: "Ritesh's Portfolio",
+    description:
+      "Personal portfolio — data science, analytics, and projects.",
+    ogImageUrl: undefined,
+    twitterSite: undefined,
+  },
+  notes: [],
+  downloadableAssets: [],
+  themePalette: "default",
 };

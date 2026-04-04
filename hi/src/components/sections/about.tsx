@@ -11,16 +11,27 @@ import { Textarea } from '@/components/ui/textarea';
 import type { AboutData } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { DURATION_ENTER, EASE_OUT, SPRING_UI, STAGGER_CHILD } from '@/lib/motion-presets';
 
 type Props = {
   data: AboutData;
   editMode: boolean;
   onUpdate: (field: keyof AboutData, value: string) => void;
+  onProfileImageUpload?: (file: File) => void;
+  isProfileImageUploading?: boolean;
   darkMode: boolean;
 };
 
-const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) => {
+const AboutSection: React.FC<Props> = ({
+  data,
+  editMode,
+  onUpdate,
+  onProfileImageUpload,
+  isProfileImageUploading,
+  darkMode,
+}) => {
     const ref = useRef(null);
+    const imageFileRef = useRef<HTMLInputElement>(null);
     const isInView = useInView(ref, { once: false, amount: 0.2 });
 
     const handleTextUpdate = (field: keyof AboutData, value: string) => {
@@ -31,19 +42,19 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
       hidden: { opacity: 0 },
       visible: {
         opacity: 1,
-        transition: { staggerChildren: 0.2, delayChildren: 0.1 }
+        transition: { staggerChildren: STAGGER_CHILD, delayChildren: 0.04 }
       }
     };
     
     const itemVariants = (fromLeft: boolean) => ({
-      hidden: { opacity: 0, x: fromLeft ? -50 : 50, scale: 0.95 },
+      hidden: { opacity: 0, x: fromLeft ? -28 : 28, scale: 0.98 },
       visible: { 
         opacity: 1, 
         x: 0, 
         scale: 1, 
         transition: darkMode 
-          ? { duration: 0.8, ease: "easeOut" } 
-          : { type: "spring", stiffness: 100, damping: 20 }
+          ? { duration: DURATION_ENTER, ease: EASE_OUT } 
+          : SPRING_UI
       }
     });
 
@@ -84,7 +95,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
                     variants={itemVariants(true)}
                 >
                     <div className={cn(
-                        "relative group aspect-[4/5] w-full max-w-xs mx-auto md:max-w-none rounded-lg overflow-hidden transition-all duration-300",
+                        "relative group aspect-[4/5] w-full max-w-xs mx-auto md:max-w-none rounded-lg overflow-hidden transition-all duration-200 ease-out",
                          darkMode 
                         ? "shadow-2xl shadow-accent/20 border-2 border-accent/50 animate-pulse-glow" 
                         : "shadow-xl"
@@ -98,12 +109,36 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
                           className="transition-transform duration-500 group-hover:scale-105"
                       />
                        {editMode && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-out p-2">
+                           <input
+                             type="file"
+                             ref={imageFileRef}
+                             className="hidden"
+                             accept="image/*"
+                             disabled={isProfileImageUploading}
+                             onChange={(e) => {
+                               const f = e.target.files?.[0];
+                               if (f && onProfileImageUpload) onProfileImageUpload(f);
+                               e.target.value = '';
+                             }}
+                           />
+                           {onProfileImageUpload && (
+                             <Button
+                               type="button"
+                               size="sm"
+                               variant="secondary"
+                               className="text-xs"
+                               disabled={isProfileImageUploading}
+                               onClick={() => imageFileRef.current?.click()}
+                             >
+                               {isProfileImageUploading ? 'Uploading…' : 'Upload image (max 50 MB)'}
+                             </Button>
+                           )}
                            <Textarea 
                                 value={data.imageUrl} 
                                 onChange={(e) => handleTextUpdate('imageUrl', e.target.value)} 
-                                className="w-11/12 h-auto text-xs text-center bg-transparent border-dashed"
-                                placeholder="Paste new image URL here"
+                                className="w-11/12 h-auto text-xs text-center bg-transparent border-dashed min-h-[3rem]"
+                                placeholder="Or paste image URL"
                             />
                         </div>
                       )}
@@ -115,7 +150,7 @@ const AboutSection: React.FC<Props> = ({ data, editMode, onUpdate, darkMode }) =
                     variants={itemVariants(false)}
                 >
                     <Card className={cn(
-                        "p-6 rounded-lg transition-all duration-300 h-full",
+                        "p-6 rounded-lg transition-all duration-200 ease-out h-full",
                         darkMode 
                             ? "bg-card/50 border-primary/20" 
                             : "bg-card border"
