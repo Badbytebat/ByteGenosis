@@ -11,7 +11,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Plus, Trash2, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
 type AnimatedCardProps = {
   item: Qualification;
   index: number;
@@ -23,8 +22,8 @@ type AnimatedCardProps = {
 
 const AnimatedCertificationCard: React.FC<AnimatedCardProps> = ({ item, index, editMode, handleUpdate, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.2 });
-  
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+
   const transition = darkMode 
     ? { duration: 0.8, delay: index * 0.1, ease: "easeOut" } 
     : { type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 };

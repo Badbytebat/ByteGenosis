@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
 type AnimatedCardProps = {
   item: Qualification;
   index: number;
@@ -22,7 +21,7 @@ type AnimatedCardProps = {
 
 const AnimatedEducationCard: React.FC<AnimatedCardProps> = ({ item, index, editMode, handleUpdate, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const transition = darkMode 
     ? { duration: 0.8, delay: index * 0.1, ease: "easeOut" } 

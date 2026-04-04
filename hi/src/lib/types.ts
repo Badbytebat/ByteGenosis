@@ -94,7 +94,23 @@ export interface DownloadableAsset {
 }
 
 /** Extra color palettes beyond the default dark/light pair. */
-export type ThemePalette = 'default' | 'midnight' | 'ocean' | 'paper';
+export type ThemePalette = 'default' | 'midnight' | 'ocean' | 'paper' | 'luxury';
+
+export const THEME_PALETTES: ThemePalette[] = [
+  'default',
+  'midnight',
+  'ocean',
+  'paper',
+  'luxury',
+];
+
+export function isThemePalette(value: unknown): value is ThemePalette {
+  return typeof value === 'string' && THEME_PALETTES.includes(value as ThemePalette);
+}
+
+export function parseThemePalette(value: unknown): ThemePalette {
+  return isThemePalette(value) ? value : 'default';
+}
 
 export interface PortfolioData {
   header: HeaderData;

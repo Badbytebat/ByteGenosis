@@ -1,5 +1,6 @@
 import { getSupabaseBrowserClient } from "./supabase/client";
 import type { PortfolioData } from "./types";
+import { parseThemePalette } from "./types";
 import { defaultData } from "./data";
 
 const PORTFOLIO_ROW_ID = "main-portfolio";
@@ -40,7 +41,7 @@ export function mergePortfolioRow(raw: Record<string, unknown> | null): Portfoli
     downloadableAssets: Array.isArray(d.downloadableAssets)
       ? d.downloadableAssets
       : defaultData.downloadableAssets,
-    themePalette: d.themePalette ?? defaultData.themePalette,
+    themePalette: parseThemePalette(d.themePalette),
   };
 }
 

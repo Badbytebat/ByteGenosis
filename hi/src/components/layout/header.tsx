@@ -29,11 +29,12 @@ type HeaderProps = {
   onThemePaletteChange: (palette: ThemePalette) => void;
 };
 
-const PALETTE_OPTIONS: { value: ThemePalette; label: string }[] = [
-  { value: 'default', label: 'Palette: default' },
-  { value: 'midnight', label: 'Palette: midnight' },
-  { value: 'ocean', label: 'Palette: ocean' },
-  { value: 'paper', label: 'Palette: paper' },
+const PALETTE_OPTIONS: { value: ThemePalette; label: string; hint: string }[] = [
+  { value: 'default', label: 'Default', hint: 'Site default colors' },
+  { value: 'midnight', label: 'Midnight', hint: 'Violet accent' },
+  { value: 'ocean', label: 'Ocean', hint: 'Teal / blue accent' },
+  { value: 'paper', label: 'Paper', hint: 'Warm, low-contrast surfaces' },
+  { value: 'luxury', label: 'Luxury', hint: 'Sun: charcoal + silver card rims, gold accents. Moon: deeper + metal trim' },
 ];
 
 const Header: React.FC<HeaderProps> = ({
@@ -104,13 +105,22 @@ const Header: React.FC<HeaderProps> = ({
           value={themePalette}
           onValueChange={(v) => onThemePaletteChange(v as ThemePalette)}
         >
-          <SelectTrigger className="h-9 w-[min(7rem,22vw)] shrink-0 text-[10px] sm:w-[140px] sm:text-xs" aria-label="Color palette">
-            <SelectValue />
+          <SelectTrigger
+            className="h-9 w-[min(8.5rem,30vw)] shrink-0 text-[10px] sm:w-[158px] sm:text-xs"
+            aria-label="Accent palette"
+            title="Accent palette. Luxury (sun): semi-dark charcoal, platinum/silver borders on cards, gold buttons. Saved when editing."
+          >
+            <SelectValue placeholder="Palette" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[110]">
             {PALETTE_OPTIONS.map((o) => (
-              <SelectItem key={o.value} value={o.value} className="text-xs">
-                {o.label.replace('Palette: ', '')}
+              <SelectItem
+                key={o.value}
+                value={o.value}
+                className="text-xs"
+                title={o.hint}
+              >
+                {o.label}
               </SelectItem>
             ))}
           </SelectContent>

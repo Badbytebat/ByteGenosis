@@ -13,8 +13,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { DURATION_ENTER, EASE_OUT, SPRING_UI, STAGGER_CHILD } from '@/lib/motion-presets';
-
 type AnimatedCardProps = {
   item: Project;
   index: number;
@@ -26,21 +24,21 @@ type AnimatedCardProps = {
 
 const AnimatedProjectCard: React.FC<AnimatedCardProps> = ({ item, index, editMode, handleUpdate, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const transition = darkMode 
-    ? { duration: DURATION_ENTER, delay: index * STAGGER_CHILD, ease: EASE_OUT } 
-    : { ...SPRING_UI, delay: index * STAGGER_CHILD };
+    ? { duration: 0.8, delay: index * 0.1, ease: "easeOut" } 
+    : { type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 };
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 22 }}
-      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 22 }}
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
       transition={transition}
     >
       <Card className={cn(
-        "flex flex-col h-full transition-all duration-200 ease-out",
+        "flex flex-col h-full transition-all duration-300",
         darkMode
           ? "bg-card/50 border-primary/20 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10 hover:scale-105 hover:-rotate-1"
           : "bg-card border light-card"

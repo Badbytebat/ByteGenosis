@@ -11,8 +11,6 @@ import { Textarea } from '@/components/ui/textarea';
 import type { AboutData } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { DURATION_ENTER, EASE_OUT, SPRING_UI, STAGGER_CHILD } from '@/lib/motion-presets';
-
 type Props = {
   data: AboutData;
   editMode: boolean;
@@ -32,7 +30,7 @@ const AboutSection: React.FC<Props> = ({
 }) => {
     const ref = useRef(null);
     const imageFileRef = useRef<HTMLInputElement>(null);
-    const isInView = useInView(ref, { once: false, amount: 0.2 });
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
 
     const handleTextUpdate = (field: keyof AboutData, value: string) => {
         onUpdate(field, value);
@@ -42,19 +40,19 @@ const AboutSection: React.FC<Props> = ({
       hidden: { opacity: 0 },
       visible: {
         opacity: 1,
-        transition: { staggerChildren: STAGGER_CHILD, delayChildren: 0.04 }
+        transition: { staggerChildren: 0.2, delayChildren: 0.1 }
       }
     };
     
     const itemVariants = (fromLeft: boolean) => ({
-      hidden: { opacity: 0, x: fromLeft ? -28 : 28, scale: 0.98 },
+      hidden: { opacity: 0, x: fromLeft ? -50 : 50, scale: 0.95 },
       visible: { 
         opacity: 1, 
         x: 0, 
         scale: 1, 
         transition: darkMode 
-          ? { duration: DURATION_ENTER, ease: EASE_OUT } 
-          : SPRING_UI
+          ? { duration: 0.8, ease: "easeOut" } 
+          : { type: "spring", stiffness: 100, damping: 20 }
       }
     });
 
@@ -95,7 +93,7 @@ const AboutSection: React.FC<Props> = ({
                     variants={itemVariants(true)}
                 >
                     <div className={cn(
-                        "relative group aspect-[4/5] w-full max-w-xs mx-auto md:max-w-none rounded-lg overflow-hidden transition-all duration-200 ease-out",
+                        "relative group aspect-[4/5] w-full max-w-xs mx-auto md:max-w-none rounded-lg overflow-hidden transition-all duration-300",
                          darkMode 
                         ? "shadow-2xl shadow-accent/20 border-2 border-accent/50 animate-pulse-glow" 
                         : "shadow-xl"
@@ -109,7 +107,7 @@ const AboutSection: React.FC<Props> = ({
                           className="transition-transform duration-500 group-hover:scale-105"
                       />
                        {editMode && (
-                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-out p-2">
+                        <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2">
                            <input
                              type="file"
                              ref={imageFileRef}
@@ -150,7 +148,7 @@ const AboutSection: React.FC<Props> = ({
                     variants={itemVariants(false)}
                 >
                     <Card className={cn(
-                        "p-6 rounded-lg transition-all duration-200 ease-out h-full",
+                        "p-6 rounded-lg transition-all duration-300 h-full",
                         darkMode 
                             ? "bg-card/50 border-primary/20" 
                             : "bg-card border"

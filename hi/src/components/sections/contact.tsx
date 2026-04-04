@@ -7,7 +7,6 @@ import type { ContactMethod } from "@/lib/types";
 import { Github, Linkedin, Mail, Instagram } from "lucide-react";
 import { WhatsappIcon, KaggleIcon, HackerRankIcon, GeeksforGeeksIcon, LeetCodeIcon } from "@/components/layout/custom-icons";
 import { cn } from '@/lib/utils';
-
 // Available icons: Mail, Linkedin, Github, Instagram, Whatsapp, Kaggle, HackerRank, GeeksforGeeks, LeetCode
 const ICONS: { [key: string]: React.ElementType } = {
   Mail,
@@ -30,7 +29,7 @@ type AnimatedCardProps = {
 
 const AnimatedContactCard: React.FC<AnimatedCardProps> = ({ method, index, formatHref, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
   const IconComponent = ICONS[method.icon] || Mail;
 
   const transition = darkMode 
@@ -74,7 +73,7 @@ type Props = {
 
 const ContactSection: React.FC<Props> = ({ data, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.1 });
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
   
   const formatHref = (url: string = ''): string => {
     if (!url) return '#';

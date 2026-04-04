@@ -84,7 +84,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
               if (
                 !reduceMotion &&
                 !isInteractiveRef.current &&
-                timestamp - lastMatrixSpawn.current > 42
+                timestamp - lastMatrixSpawn.current > 80
               ) {
                   lastMatrixSpawn.current = timestamp;
                   createMatrixParticle(cursorPos.current.x, cursorPos.current.y);
@@ -101,19 +101,19 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
             break;
           }
         case 'ink_bloom':
-            if (!reduceMotion && timestamp - lastInkSpawn.current > 48) {
+            if (!reduceMotion && timestamp - lastInkSpawn.current > 60) {
                 lastInkSpawn.current = timestamp;
                 createInkBloomParticle(cursorPos.current.x, cursorPos.current.y);
             }
             break;
         case 'aurora':
-             if (!reduceMotion && timestamp - lastAuroraSpawn.current > 40) {
+             if (!reduceMotion && timestamp - lastAuroraSpawn.current > 50) {
                 lastAuroraSpawn.current = timestamp;
                 createAuroraParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
             }
             break;
         case 'circuit_pulse':
-             if (timestamp - lastCircuitSpawn.current > 72) {
+             if (timestamp - lastCircuitSpawn.current > 100) {
                 lastCircuitSpawn.current = timestamp;
                 createCircuitPulseParticle(cursorPos.current.x, cursorPos.current.y, isMouseDown.current);
             }

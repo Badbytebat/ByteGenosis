@@ -10,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
 // A sub-component for each timeline item to handle its own animation state
 type ExperienceItemProps = {
   item: Experience;
@@ -24,7 +23,7 @@ type ExperienceItemProps = {
 const ExperienceItem: React.FC<ExperienceItemProps> = ({ item, index, editMode, updateEntry, deleteEntry, darkMode }) => {
   const ref = useRef(null);
   // Trigger animation when the item is 30% in view. Reversible.
-  const isInView = useInView(ref, { once: false, amount: 0.3 });
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   const handleUpdate = (id: number, field: keyof Experience, value: string) => {
     updateEntry('experience', id, field, value);

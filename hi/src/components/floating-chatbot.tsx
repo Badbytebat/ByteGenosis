@@ -56,8 +56,8 @@ const FloatingChatbot: React.FC<Props> = ({
   const toggleChat = () => setIsOpen((open) => !open);
 
   const panelTransition = reduceMotion
-    ? { duration: 0.12 }
-    : { type: 'spring' as const, stiffness: 520, damping: 34, mass: 0.75 };
+    ? { duration: 0.15 }
+    : { type: 'spring' as const, stiffness: 380, damping: 32 };
 
   /** Portal to body so `position: fixed` is not trapped by Framer Motion transforms on the page root. */
   const ui = (

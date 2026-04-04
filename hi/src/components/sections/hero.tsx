@@ -8,8 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HeroData } from '@/lib/types';
-import { DURATION_ENTER, EASE_OUT, SPRING_UI } from '@/lib/motion-presets';
-
 type HeroSectionProps = {
   data: HeroData;
   editMode: boolean;
@@ -20,13 +18,13 @@ type HeroSectionProps = {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scrollToSection, darkMode }) => {
   const fadeInUp = {
-    initial: { opacity: 0, y: 14 },
+    initial: { opacity: 0, y: 20 },
     animate: { 
       opacity: 1, 
       y: 0,
       transition: darkMode 
-        ? { duration: DURATION_ENTER, ease: EASE_OUT }
-        : SPRING_UI
+        ? { duration: 0.8, ease: "easeInOut" }
+        : { type: "spring", stiffness: 100, damping: 20 }
     },
   };
 
@@ -66,7 +64,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.2 }}
                 className="text-xl md:text-2xl text-foreground/80 font-light"
               >
                 {data.subtitle}
@@ -79,7 +77,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ data, editMode, onUpdate, scr
           variants={fadeInUp}
           initial="initial"
           animate="animate"
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.4 }}
           className="z-10 flex flex-col sm:flex-row gap-4 mt-10 justify-center"
         >
           <Button

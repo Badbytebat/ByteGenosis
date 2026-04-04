@@ -1,32 +1,60 @@
-'use client';
-import { storage } from './firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+"use client";
+
+import { getSupabaseBrowserClient } from "./supabase/client";
+
+const BUCKET = "portfolio-files";
+/** PDFs and images for resume + about photo; matches your ~50 MB cap. */
+export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+function isAllowedUpload(file: File): boolean {
+  if (file.size > MAX_UPLOAD_BYTES) return false;
+  const t = file.type;
+  if (t.startsWith("image/") || t === "application/pdf") return true;
+  const n = file.name.toLowerCase();
+  return (
+    n.endsWith(".pdf") ||
+    /\.(png|jpg|jpeg|gif|webp|avif|heic|bmp)$/i.test(n)
+  );
+}
 
 export const uploadFile = async (file: File, path: string): Promise<string> => {
   if (!file) {
-    throw new Error('No file provided for upload.');
+    throw new Error("No file provided for upload.");
+  }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error("File is too large (maximum size is 50 MB).");
+  }
+  if (!isAllowedUpload(file)) {
+    throw new Error("Only images and PDF files are allowed.");
   }
 
-  const storageRef = ref(storage, path);
+  const supabase = getSupabaseBrowserClient();
+  if (!supabase) {
+    throw new Error(
+      "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local."
+    );
+  }
 
-  try {
-    const snapshot = await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return downloadURL;
+  const { error: uploadError } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, file, {
+      cacheControl: "3600",
+      upsert: true,
+    });
 
-  } catch (error: any) {
-    console.error("Firebase upload error:", error.code, error.message);
-    
-    // Provide more specific, helpful error messages based on Firebase error codes.
-    // This helps diagnose issues like misconfigured security rules.
-    let userFriendlyMessage = `Upload failed: ${error.message}. Check the browser console and your Firebase Storage rules.`;
-    
-    if (error.code === 'storage/unauthorized') {
-      userFriendlyMessage = 'Permission Denied. Please check your Firebase Storage security rules to ensure you have write permission.';
-    } else if (error.code === 'storage/unauthenticated') {
-      userFriendlyMessage = 'Authentication Required. You must be signed in to upload files.';
+  if (uploadError) {
+    console.error("Storage upload error:", uploadError);
+    let msg = uploadError.message || "Upload failed.";
+    if (uploadError.message?.toLowerCase().includes("row-level security")) {
+      msg =
+        "Permission denied. Check Storage policies in Supabase (authenticated users need insert access to bucket portfolio-files).";
     }
-    
-    throw new Error(userFriendlyMessage);
+    throw new Error(msg);
   }
+
+  const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  if (!pub?.publicUrl) {
+    throw new Error("Could not get public URL for uploaded file.");
+  }
+  return pub.publicUrl;
 };

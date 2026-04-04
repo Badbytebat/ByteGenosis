@@ -188,7 +188,7 @@ const Chatbot: React.FC<Props> = ({
   return (
     <Card
       className={cn(
-        "w-full max-w-lg transition-all duration-200 ease-out",
+        "w-full max-w-lg transition-all duration-300",
         darkMode ? "bg-card/50 border-primary/20" : "bg-card border"
       )}
     >

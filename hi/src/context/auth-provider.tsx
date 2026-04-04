@@ -1,15 +1,15 @@
-
 "use client";
 
-import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import {
-  User,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from "react";
+import type { User } from "@supabase/supabase-js";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   user: User | null;
@@ -26,53 +26,99 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
-  
+
   const signIn = async (email: string, password: string) => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      toast({
+        title: "Sign In Unavailable",
+        description:
+          "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
+        variant: "destructive",
+      });
+      return;
+    }
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Signed In', description: 'Welcome back!' });
-    } catch (error: any) {
-      console.error("Sign in error", error);
-      let description = "An unknown error occurred.";
-       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-          description = 'Invalid email or password. Please try again.';
-      } else if (error.code === 'auth/operation-not-allowed') {
-         description = 'Email/Password sign in is not enabled in your Firebase project.';
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) {
+        let description = error.message || "An unknown error occurred.";
+        if (
+          error.message?.includes("Invalid login") ||
+          error.message?.includes("Invalid credentials")
+        ) {
+          description = "Invalid email or password. Please try again.";
+        }
+        toast({ title: "Sign In Failed", description, variant: "destructive" });
+        return;
       }
-      toast({ title: 'Sign In Failed', description, variant: 'destructive' });
+      toast({ title: "Signed In", description: "Welcome back!" });
+    } catch (error) {
+      console.error("Sign in error", error);
+      toast({
+        title: "Sign In Failed",
+        description: "An unknown error occurred.",
+        variant: "destructive",
+      });
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
-
   const signOut = async () => {
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) return;
     try {
-      await firebaseSignOut(auth);
-      toast({ title: 'Signed out', description: 'You have been successfully signed out.' });
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
     } catch (error) {
-      console.error('Sign out error', error);
-      toast({ title: 'Error', description: 'Failed to sign out.', variant: 'destructive' });
+      console.error("Sign out error", error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out.",
+        variant: "destructive",
+      });
     }
   };
 
   const value = { user, loading, signIn, signOut };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

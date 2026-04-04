@@ -4,6 +4,7 @@
 import React from 'react';
 import { flushSync } from 'react-dom';
 import type { PortfolioData, Qualification, HeaderData, AboutData, HeroData, AiAssistantSettings, SiteMeta, ThemePalette } from '@/lib/types';
+import { isThemePalette } from '@/lib/types';
 import { defaultData } from '@/lib/data';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
 import { getPortfolioData, savePortfolioData, mergePortfolioRow } from '@/lib/firestore';
@@ -114,6 +115,22 @@ export default function HomePage() {
       }
     }
   }, [user, authLoading, toast]);
+
+  /** Visitors: restore palette from localStorage (owners keep portfolio JSON). */
+  React.useEffect(() => {
+    if (initialDataLoading || authLoading) return;
+    if (user) return;
+    try {
+      const raw = localStorage.getItem('portfolio-theme-palette');
+      if (isThemePalette(raw)) {
+        setData((prev) =>
+          prev.themePalette === raw ? prev : { ...prev, themePalette: raw }
+        );
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [initialDataLoading, authLoading, user]);
 
   // Handle custom cursor visibility based on edit mode and style
   React.useEffect(() => {
@@ -286,12 +303,15 @@ export default function HomePage() {
 
   const handleThemePaletteChange = React.useCallback(
     (themePalette: ThemePalette) => {
-      setData((prevData) => {
-        debouncedSave({ themePalette });
-        return { ...prevData, themePalette };
-      });
+      try {
+        localStorage.setItem('portfolio-theme-palette', themePalette);
+      } catch {
+        /* ignore quota / private mode */
+      }
+      setData((prevData) => ({ ...prevData, themePalette }));
+      if (editMode) debouncedSave({ themePalette });
     },
-    [debouncedSave]
+    [debouncedSave, editMode]
   );
 
   React.useEffect(() => {
@@ -496,8 +516,8 @@ export default function HomePage() {
           <motion.div
             key="login"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } }}
-            exit={{ opacity: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
+            animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
+            exit={{ opacity: 0, transition: { duration: 0.8, ease: 'easeInOut' } }}
           >
             <LoginScreen
               email={email}
@@ -515,8 +535,8 @@ export default function HomePage() {
           <motion.div
             key="portfolio"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } }}
-            className={`relative flex min-h-screen flex-col ${darkMode ? 'dark' : 'light'}`}
+            animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
+            className="relative flex min-h-screen flex-col"
           >
             <PortfolioStarrySky darkMode={darkMode} fullscreen />
             <div className="relative z-[5] flex flex-1 flex-col">

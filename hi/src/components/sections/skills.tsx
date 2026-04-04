@@ -10,7 +10,6 @@ import { Progress } from '@/components/ui/progress';
 import { Plus, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-
 type Props = {
   data: Skill[];
   editMode: boolean;
@@ -22,7 +21,7 @@ type Props = {
 
 const SkillsSection: React.FC<Props> = ({ data, editMode, updateEntry, addEntry, deleteEntry, darkMode }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   const getSkillLevel = (level: number): string => {
     if (level <= 10) return "Novice";

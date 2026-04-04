@@ -32,7 +32,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({
   darkMode, setDarkMode
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background overflow-hidden transition-colors duration-300 ease-out">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background overflow-hidden transition-colors duration-500">
       <PixelArtBackground darkMode={darkMode} />
       
       <div className="relative z-10 flex flex-col items-center">

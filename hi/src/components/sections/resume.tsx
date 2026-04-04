@@ -6,7 +6,6 @@ import { motion, useInView } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Download, Upload, Loader2 } from "lucide-react";
 import { cn } from '@/lib/utils';
-
 type Props = {
   resumeUrl: string;
   editMode: boolean;
@@ -18,7 +17,7 @@ type Props = {
 const ResumeSection: React.FC<Props> = ({ resumeUrl, editMode, onUpload, isUploading, darkMode }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const motionRef = useRef(null);
-  const isInView = useInView(motionRef, { once: false, amount: 0.2 });
+  const isInView = useInView(motionRef, { once: true, amount: 0.2 });
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

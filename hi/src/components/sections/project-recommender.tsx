@@ -18,7 +18,7 @@ type Props = {
 
 const ProjectRecommender: React.FC<Props> = ({ darkMode }) => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { once: false, amount: 0.2 });
+    const isInView = useInView(ref, { once: true, amount: 0.2 });
     const { toast } = useToast();
 
     const [skills, setSkills] = useState('');
