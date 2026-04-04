@@ -3,7 +3,17 @@
 
 import React from 'react';
 import { flushSync } from 'react-dom';
-import type { PortfolioData, Qualification, HeaderData, AboutData, HeroData, AiAssistantSettings, SiteMeta, ThemePalette } from '@/lib/types';
+import type {
+  PortfolioData,
+  Qualification,
+  HeaderData,
+  AboutData,
+  HeroData,
+  AiAssistantSettings,
+  SiteMeta,
+  ThemePalette,
+  BackgroundMusicTrack,
+} from '@/lib/types';
 import { isThemePalette } from '@/lib/types';
 import { defaultData } from '@/lib/data';
 import { isSupabaseConfigured } from '@/lib/supabase/client';
@@ -12,7 +22,7 @@ import { useAuth } from '@/context/auth-provider';
 import { useToast } from '@/hooks/use-toast';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { uploadFile } from '@/lib/storage';
+import { uploadFile, uploadAudioFile } from '@/lib/storage';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import LoginScreen from '@/components/login-screen';
@@ -35,6 +45,8 @@ import SiteMetaSection from '@/components/sections/site-meta-section';
 import SiteMetadata from '@/components/site-metadata';
 import JsonLd from '@/components/json-ld';
 import FloatingChatbot from '@/components/floating-chatbot';
+import BackgroundMusicDock from '@/components/background-music-dock';
+import BackgroundMusicEditor from '@/components/background-music-editor';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FloatingCursorSelector from '@/components/floating-cursor-selector';
@@ -62,6 +74,8 @@ export default function HomePage() {
   const [showLogin, setShowLogin] = React.useState(true);
   const [editMode, setEditMode] = React.useState(false);
   const [isResumeUploading, setIsResumeUploading] = React.useState(false);
+  const [isMusicUploading, setIsMusicUploading] = React.useState(false);
+  const [bgMusicPlaying, setBgMusicPlaying] = React.useState(false);
   const [isAboutPhotoUploading, setIsAboutPhotoUploading] = React.useState(false);
   const [cursorText, setCursorText] = React.useState('');
   const [cursorColor, setCursorColor] = React.useState(CURSOR_COLORS[0]);
@@ -77,6 +91,7 @@ export default function HomePage() {
   const isMobile = useIsMobile();
   const reduceMotion = useReducedMotion();
   const importInputRef = React.useRef<HTMLInputElement>(null);
+  const resumeToolbarInputRef = React.useRef<HTMLInputElement>(null);
   const dataRef = React.useRef(data);
   dataRef.current = data;
   const [previewAsVisitor, setPreviewAsVisitor] = React.useState(false);
@@ -234,7 +249,13 @@ export default function HomePage() {
                 newItem = { id: newId, type: itemType, title: 'New Entry', institution: 'Institution', duration: 'Year', description: '...' };
                 break;
             case 'contact':
-                newItem = { id: newId, icon: 'Mail', label: 'New Contact', value: 'new@contact.com', href: '#' };
+                newItem = {
+                  id: newId,
+                  icon: 'Globe',
+                  label: 'New link',
+                  value: 'yoursite.com',
+                  href: 'https://',
+                };
                 break;
         }
 
@@ -301,6 +322,49 @@ export default function HomePage() {
     [debouncedSave]
   );
 
+  const handleBackgroundMusicTracksUpdate = React.useCallback(
+    (next: BackgroundMusicTrack[]) => {
+      setData((prev) => ({ ...prev, backgroundMusicTracks: next }));
+      if (editMode) debouncedSave({ backgroundMusicTracks: next });
+    },
+    [debouncedSave, editMode]
+  );
+
+  const handleMusicFileUpload = React.useCallback(
+    async (file: File) => {
+      if (!user) {
+        toast({
+          variant: 'destructive',
+          title: 'Sign in required',
+          description: 'Log in to upload background music.',
+        });
+        return;
+      }
+      setIsMusicUploading(true);
+      try {
+        const safe = file.name.replace(/[^\w.\-]+/g, '_');
+        const url = await uploadAudioFile(file, `music/${user.id}/${Date.now()}-${safe}`);
+        const label = file.name.replace(/\.[^.]+$/, '') || 'Track';
+        setData((prev) => {
+          const newId =
+            prev.backgroundMusicTracks.length === 0
+              ? 1
+              : Math.max(...prev.backgroundMusicTracks.map((t) => t.id)) + 1;
+          const next = [...prev.backgroundMusicTracks, { id: newId, label, url }];
+          if (editMode) debouncedSave({ backgroundMusicTracks: next });
+          return { ...prev, backgroundMusicTracks: next };
+        });
+        toast({ description: 'Audio uploaded and added to the playlist.' });
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : 'Upload failed.';
+        toast({ variant: 'destructive', title: 'Music upload failed', description: msg });
+      } finally {
+        setIsMusicUploading(false);
+      }
+    },
+    [user, editMode, debouncedSave, toast]
+  );
+
   const handleThemePaletteChange = React.useCallback(
     (themePalette: ThemePalette) => {
       try {
@@ -317,6 +381,10 @@ export default function HomePage() {
   React.useEffect(() => {
     document.documentElement.setAttribute("data-palette", data.themePalette);
   }, [data.themePalette]);
+
+  React.useEffect(() => {
+    if (data.backgroundMusicTracks.length === 0) setBgMusicPlaying(false);
+  }, [data.backgroundMusicTracks.length]);
 
   React.useEffect(() => {
     if (editMode && user && !prevEditMode.current) {
@@ -538,7 +606,11 @@ export default function HomePage() {
             animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
             className="relative flex min-h-screen flex-col"
           >
-            <PortfolioStarrySky darkMode={darkMode} fullscreen />
+            <PortfolioStarrySky
+              darkMode={darkMode}
+              fullscreen
+              musicPlaying={bgMusicPlaying}
+            />
             <div className="relative z-[5] flex flex-1 flex-col">
               {editMode && user && previewAsVisitor && (
                 <div className="fixed top-16 left-0 right-0 z-[55] flex flex-wrap items-center justify-center gap-3 border-b border-accent/30 bg-background/95 px-4 py-2 text-sm backdrop-blur">
@@ -564,7 +636,36 @@ export default function HomePage() {
               <div className="fixed bottom-4 left-4 z-50 flex max-w-[min(100vw-2rem,22rem)] flex-col gap-2">
                 {editMode && user ? (
                   <>
+                    {!!editChrome && (
+                      <BackgroundMusicEditor
+                        tracks={data.backgroundMusicTracks}
+                        onTracksChange={handleBackgroundMusicTracksUpdate}
+                        onUploadFile={handleMusicFileUpload}
+                        isUploading={isMusicUploading}
+                      />
+                    )}
                     <div className="flex flex-wrap gap-2">
+                      <input
+                        ref={resumeToolbarInputRef}
+                        type="file"
+                        accept=".pdf,application/pdf"
+                        className="hidden"
+                        disabled={isResumeUploading}
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          e.target.value = '';
+                          if (f) void handleResumeUpload(f);
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        disabled={isResumeUploading}
+                        onClick={() => resumeToolbarInputRef.current?.click()}
+                      >
+                        {isResumeUploading ? 'Uploading…' : 'Upload resume (PDF)'}
+                      </Button>
                       <Button type="button" size="sm" variant="secondary" onClick={handleExportPortfolio}>
                         Export JSON
                       </Button>
@@ -702,6 +803,12 @@ export default function HomePage() {
                 onAiAssistantChange={handleAiAssistantUpdate}
                 reduceMotion={reduceMotion}
               />
+              {data.backgroundMusicTracks.length > 0 ? (
+                <BackgroundMusicDock
+                  tracks={data.backgroundMusicTracks}
+                  onPlayingChange={setBgMusicPlaying}
+                />
+              ) : null}
               {!isMobile && (
                 <FloatingCursorSelector 
                   darkMode={darkMode} 

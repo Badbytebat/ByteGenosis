@@ -38,6 +38,8 @@ type Props = {
   /** Fixed full-viewport layer behind page content (portfolio only; not login). */
   fullscreen?: boolean;
   className?: string;
+  /** When true, stars twinkle with a subtle beat (background music playing). */
+  musicPlaying?: boolean;
 };
 
 function spawnMeteor(w: number, h: number): Meteor {
@@ -91,6 +93,7 @@ export function PortfolioStarrySky({
   darkMode,
   fullscreen = false,
   className,
+  musicPlaying = false,
 }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -231,31 +234,45 @@ export function PortfolioStarrySky({
 
       for (const s of starsRef.current) {
         const p = parallax[s.layer] ?? 0.08;
+        const depth = (s.layer + 1) / 3;
         const scroll = fullscreen ? scrollRef.current : 0;
+        /* Slow “3D drift”: deeper layers move more in screen space (parallax-style). */
+        const slow = t * (0.09 + depth * 0.06) + s.tw;
+        const arc = 22 * (0.55 + depth * 0.45);
         const sx =
           s.bx +
-          driftX * (s.layer + 1) * 0.15 +
+          Math.sin(slow) * arc * 0.42 +
+          Math.cos(slow * 0.71 + s.layer) * arc * 0.28 +
+          driftX * (s.layer + 1) * 0.18 +
           Math.sin(t * 0.03 + s.layer) * p * 6 -
           scroll * (0.012 + p * 0.035) * (s.layer + 1);
         const sy =
           s.by +
-          driftY * (s.layer + 1) * 0.12 +
+          Math.cos(slow * 0.83) * arc * 0.36 +
+          Math.sin(slow * 0.39) * arc * 0.22 +
+          driftY * (s.layer + 1) * 0.14 +
           Math.sin(t * s.twSpeed + s.tw) * 1.2 -
           scroll * 0.004 * (s.layer + 1);
 
+        const musicPulse = musicPlaying
+          ? 0.28 * (0.5 + 0.5 * Math.sin(t * 6.8 + s.tw * 3))
+          : 0;
         const twinkle =
           0.45 +
-          0.55 * (0.5 + 0.5 * Math.sin(t * s.twSpeed * 1.7 + s.tw));
+          0.55 * (0.5 + 0.5 * Math.sin(t * s.twSpeed * 1.7 + s.tw)) +
+          musicPulse;
 
         if (sx < -2 || sy < -2 || sx > w + 2 || sy > h + 2) continue;
 
+        const pr = s.r * (0.82 + depth * 0.28);
+
         if (darkMode) {
-          ctx.fillStyle = `rgba(230, 242, 255, ${0.35 + twinkle * 0.65})`;
+          ctx.fillStyle = `rgba(230, 242, 255, ${Math.min(1, 0.28 + twinkle * 0.72)})`;
         } else {
-          ctx.fillStyle = `rgba(255, 255, 255, ${0.2 + twinkle * 0.35})`;
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, 0.15 + twinkle * 0.4)})`;
         }
         ctx.beginPath();
-        ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
+        ctx.arc(sx, sy, pr, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -372,7 +389,7 @@ export function PortfolioStarrySky({
       ro.disconnect();
       window.removeEventListener("resize", resize);
     };
-  }, [darkMode, fullscreen, initStars]);
+  }, [darkMode, fullscreen, initStars, musicPlaying]);
 
   return (
     <div

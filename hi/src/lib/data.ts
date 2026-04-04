@@ -244,5 +244,6 @@ export const defaultData: PortfolioData = {
   },
   notes: [],
   downloadableAssets: [],
+  backgroundMusicTracks: [],
   themePalette: "default",
 };

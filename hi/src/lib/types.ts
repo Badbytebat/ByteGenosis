@@ -93,6 +93,13 @@ export interface DownloadableAsset {
   url: string;
 }
 
+/** Optional ambient tracks (URL or uploaded file); visitors can switch track / mute. */
+export interface BackgroundMusicTrack {
+  id: number;
+  label: string;
+  url: string;
+}
+
 /** Extra color palettes beyond the default dark/light pair. */
 export type ThemePalette = 'default' | 'midnight' | 'ocean' | 'paper' | 'luxury';
 
@@ -126,6 +133,8 @@ export interface PortfolioData {
   siteMeta: SiteMeta;
   notes: NotePost[];
   downloadableAssets: DownloadableAsset[];
+  /** Optional background music; empty = no player. */
+  backgroundMusicTracks: BackgroundMusicTrack[];
   /** Visual theme: dark/light plus optional palette (saved with portfolio). */
   themePalette: ThemePalette;
 }

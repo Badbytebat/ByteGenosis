@@ -3,7 +3,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import type { CursorStyle } from '@/app/page';
-import { cn } from '@/lib/utils';
 
 type MatrixCursorProps = {
   darkMode: boolean;
@@ -76,8 +75,18 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
       if (mainCursorEl) {
         mainCursorEl.style.left = `${cursorPos.current.x}px`;
         mainCursorEl.style.top = `${cursorPos.current.y}px`;
+        /* Light-mode (and matrix fallback) dots: hover / click feedback without remounting DOM. */
+        const tag = mainCursorEl.tagName;
+        if (tag === 'DIV') {
+          mainCursorEl.classList.toggle('interactive', isInteractiveRef.current);
+          mainCursorEl.classList.toggle('cursor-pressed', isMouseDown.current);
+        }
+        if (tag === 'SPAN' && mainCursorEl.classList.contains('cursor-text-label')) {
+          mainCursorEl.classList.toggle('interactive', isInteractiveRef.current);
+          mainCursorEl.classList.toggle('cursor-pressed', isMouseDown.current);
+        }
       }
-      
+
       // Style-specific animations
       switch(style) {
           case 'matrix':
@@ -170,6 +179,12 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
                 mainCursor.className = 'cursor-text-label';
                 mainCursor.textContent = cursorText || '·';
                 mainCursor.style.setProperty('--cursor-glow-color', color);
+            } else if (!darkMode) {
+                mainCursor = document.createElement('div');
+                mainCursor.className = 'light-cursor';
+            } else {
+                mainCursor = document.createElement('div');
+                mainCursor.className = 'matrix-fallback-dot';
             }
             break;
         case 'text':
@@ -189,13 +204,13 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
         case 'jello':
              if (!darkMode) {
                 mainCursor = document.createElement('div');
-                mainCursor.className = cn('jello-cursor', isInteractive && 'interactive');
+                mainCursor.className = 'jello-cursor';
             }
             break;
         case 'underline':
              if (!darkMode) {
                 mainCursor = document.createElement('div');
-                mainCursor.className = cn('underline-cursor', isInteractive && 'interactive');
+                mainCursor.className = 'underline-cursor';
             }
             break;
         case 'ghost':

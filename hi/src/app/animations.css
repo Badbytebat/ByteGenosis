@@ -49,7 +49,7 @@ html.custom-cursor-active, html.custom-cursor-active * {
 }
 
 /* CURSOR-RELATED ANIMATIONS */
-.cursor-text-label, .matrix-cursor-particle, .light-cursor, .ghost-cursor, .jello-cursor, .underline-cursor, .ink-bloom-particle, .aurora-particle, .circuit-pulse-particle, .starlight-cursor-wrap {
+.cursor-text-label, .matrix-cursor-particle, .light-cursor, .ghost-cursor, .jello-cursor, .underline-cursor, .matrix-fallback-dot, .ink-bloom-particle, .aurora-particle, .circuit-pulse-particle, .starlight-cursor-wrap {
     position: fixed;
     transform: translate(-50%, -50%);
     pointer-events: none;
@@ -81,7 +81,15 @@ html.custom-cursor-active, html.custom-cursor-active * {
   font-weight: bold;
   color: var(--cursor-glow-color, white); /* Use CSS variable for color */
   text-shadow: 0 0 5px var(--cursor-glow-color), 0 0 10px var(--cursor-glow-color);
-  transition: all 0.1s ease-out;
+  transition: transform 0.12s ease-out, font-size 0.12s ease-out, opacity 0.12s ease-out;
+}
+.cursor-text-label.interactive {
+  transform: translate(-50%, -50%) scale(1.12);
+  font-size: 1.35rem;
+}
+.cursor-text-label.cursor-pressed {
+  transform: translate(-50%, -50%) scale(0.94);
+  opacity: 0.92;
 }
 
 /* GHOST CURSOR */
@@ -91,7 +99,13 @@ html.custom-cursor-active, html.custom-cursor-active * {
     border: 2px solid white;
     border-radius: 50%;
     opacity: 0.5;
-    transition: left 0.2s ease-out, top 0.2s ease-out;
+    transition: left 0.2s ease-out, top 0.2s ease-out, border-color 0.2s ease, background 0.2s ease;
+}
+
+html.light .ghost-cursor {
+  border-color: rgba(15, 23, 42, 0.8);
+  background: rgba(255, 255, 255, 0.35);
+  opacity: 0.65;
 }
 
 
@@ -165,6 +179,16 @@ html.custom-cursor-active, html.custom-cursor-active * {
 }
 
 
+/* MATRIX (dark) fallback dot when not over interactive UI */
+.matrix-fallback-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e0fffa, hsl(var(--accent)));
+  box-shadow: 0 0 12px hsl(var(--accent) / 0.75);
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, opacity 0.12s ease-out;
+}
+
 /* CURSOR FOR LIGHT MODE */
 .light-cursor {
   width: 30px;
@@ -172,7 +196,14 @@ html.custom-cursor-active, html.custom-cursor-active * {
   border-radius: 50%;
   background-color: white; /* This will appear black on a light background via inversion */
   mix-blend-mode: difference;
-  transition: transform 0.1s ease-out;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+}
+.light-cursor.interactive {
+  transform: translate(-50%, -50%) scale(1.42);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.35);
+}
+.light-cursor.cursor-pressed {
+  transform: translate(-50%, -50%) scale(0.78);
 }
 
 /* JELLO CURSOR */
@@ -182,11 +213,15 @@ html.custom-cursor-active, html.custom-cursor-active * {
     border-radius: 50%;
     background-color: hsl(var(--primary));
     opacity: 0.7;
-    transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.12s ease-out;
 }
 .jello-cursor.interactive {
-    transform: scale(1.5);
-    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1.55);
+    opacity: 0.35;
+}
+.jello-cursor.cursor-pressed {
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: 0.9;
 }
 
 /* UNDERLINE CURSOR */
@@ -195,11 +230,16 @@ html.custom-cursor-active, html.custom-cursor-active * {
     height: 4px;
     background-color: hsl(var(--accent));
     border-radius: 2px;
-    transition: transform 0.2s ease-out, width 0.2s ease-out;
+    transition: transform 0.15s ease-out, width 0.15s ease-out, height 0.15s ease-out;
 }
 .underline-cursor.interactive {
-    width: 60px;
-    transform: translate(-50%, -50%) scaleY(1.5);
+    width: 64px;
+    height: 5px;
+    transform: translate(-50%, -50%) scaleY(1.45);
+}
+.underline-cursor.cursor-pressed {
+    width: 48px;
+    transform: translate(-50%, -50%) scaleY(0.85);
 }
 
 /* INK BLOOM CURSOR */

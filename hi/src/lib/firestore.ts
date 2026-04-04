@@ -1,9 +1,26 @@
 import { getSupabaseBrowserClient } from "./supabase/client";
-import type { PortfolioData } from "./types";
+import type { BackgroundMusicTrack, PortfolioData } from "./types";
 import { parseThemePalette } from "./types";
 import { defaultData } from "./data";
 
 const PORTFOLIO_ROW_ID = "main-portfolio";
+
+function normalizeBackgroundMusicTracks(raw: unknown): BackgroundMusicTrack[] {
+  if (!Array.isArray(raw)) return [];
+  const out: BackgroundMusicTrack[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const x = raw[i];
+    if (!x || typeof x !== "object") continue;
+    const o = x as Record<string, unknown>;
+    const url = typeof o.url === "string" ? o.url.trim() : "";
+    if (!url) continue;
+    const id = typeof o.id === "number" && Number.isFinite(o.id) ? o.id : i + 1;
+    const label =
+      typeof o.label === "string" && o.label.trim() ? o.label.trim() : `Track ${out.length + 1}`;
+    out.push({ id, label, url });
+  }
+  return out;
+}
 
 /** Merge partial/legacy JSON into a full `PortfolioData` (used for load + import). */
 export function mergePortfolioRow(raw: Record<string, unknown> | null): PortfolioData {
@@ -41,6 +58,7 @@ export function mergePortfolioRow(raw: Record<string, unknown> | null): Portfoli
     downloadableAssets: Array.isArray(d.downloadableAssets)
       ? d.downloadableAssets
       : defaultData.downloadableAssets,
+    backgroundMusicTracks: normalizeBackgroundMusicTracks(d.backgroundMusicTracks),
     themePalette: parseThemePalette(d.themePalette),
   };
 }
