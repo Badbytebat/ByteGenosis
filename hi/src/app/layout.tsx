@@ -6,6 +6,7 @@ import { AuthProvider } from '@/context/auth-provider';
 import PlausibleAnalytics from '@/components/plausible-analytics';
 import './globals.css';
 import './animations.css';
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Ritesh's Portfolio",
@@ -32,6 +33,18 @@ export default function RootLayout({
           </SecurityProvider>
         </AuthProvider>
         <Toaster />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KNC29Q285L"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KNC29Q285L');
+          `}
+        </Script>
       </body>
     </html>
   );
