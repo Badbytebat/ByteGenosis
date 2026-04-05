@@ -45,6 +45,12 @@ export interface ContactMethod {
 
 export interface HeaderData {
   logoText: string;
+  /** Optional mark beside the text (PNG / JPG / WebP / SVG URL from upload). */
+  logoImageUrl?: string;
+  /** Display width (px) for the uploaded logo; unset uses site default. */
+  logoWidthPx?: number;
+  /** Display height (px) for the uploaded logo; unset uses site default. */
+  logoHeightPx?: number;
 }
 
 export interface HeroData {

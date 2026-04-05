@@ -4,6 +4,7 @@ import * as React from "react";
 import { Loader2, Music, Plus, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import type { BackgroundMusicTrack } from "@/lib/types";
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
   onTracksChange: (next: BackgroundMusicTrack[]) => void;
   onUploadFile: (file: File) => void;
   isUploading: boolean;
+  /** When true, no outer card chrome (nested inside editor panel). */
+  embedded?: boolean;
 };
 
 export default function BackgroundMusicEditor({
@@ -18,6 +21,7 @@ export default function BackgroundMusicEditor({
   onTracksChange,
   onUploadFile,
   isUploading,
+  embedded = false,
 }: Props) {
   const fileRef = React.useRef<HTMLInputElement>(null);
   const [urlLabel, setUrlLabel] = React.useState("");
@@ -44,14 +48,27 @@ export default function BackgroundMusicEditor({
   };
 
   return (
-    <div className="rounded-lg border border-border/80 bg-card/90 p-3 text-left shadow-sm backdrop-blur">
-      <div className="mb-2 flex items-center gap-2 text-sm font-medium">
-        <Music className="h-4 w-4 text-accent" />
-        Background music
-      </div>
-      <p className="mb-3 text-xs text-muted-foreground">
-        Visitors see play, mute, and track switch (below). Audio must be started with Play (browser rules).
-      </p>
+    <div
+      className={cn(
+        "text-left",
+        embedded ? "space-y-2" : "rounded-lg border border-border/80 bg-card/90 p-3 shadow-sm backdrop-blur"
+      )}
+    >
+      {!embedded ? (
+        <>
+          <div className="mb-2 flex items-center gap-2 text-sm font-medium">
+            <Music className="h-4 w-4 text-accent" />
+            Background music
+          </div>
+          <p className="mb-3 text-xs text-muted-foreground">
+            Visitors see play, mute, and track switch (below). Audio must be started with Play (browser rules).
+          </p>
+        </>
+      ) : (
+        <p className="text-[11px] text-muted-foreground">
+          Play / mute / tracks appear in the bottom bar for visitors.
+        </p>
+      )}
       <ul className="mb-3 max-h-40 space-y-2 overflow-y-auto">
         {tracks.map((t) => (
           <li

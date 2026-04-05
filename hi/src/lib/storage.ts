@@ -14,7 +14,7 @@ function isAllowedUpload(file: File): boolean {
   const n = file.name.toLowerCase();
   return (
     n.endsWith(".pdf") ||
-    /\.(png|jpg|jpeg|gif|webp|avif|heic|bmp)$/i.test(n)
+    /\.(png|jpg|jpeg|gif|webp|avif|heic|bmp|ico|svg)$/i.test(n)
   );
 }
 

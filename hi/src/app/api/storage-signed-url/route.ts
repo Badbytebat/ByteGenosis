@@ -5,7 +5,7 @@ import { PORTFOLIO_STORAGE_BUCKET } from "@/lib/supabase-storage-path";
 export const runtime = "nodejs";
 
 /** Only these prefixes may be signed (mitigates open proxy abuse). */
-const ALLOWED = /^(music|favicons|photos|resumes)\//;
+const ALLOWED = /^(music|favicons|photos|resumes|logos)\//;
 
 /**
  * Returns a short-lived signed URL so visitors can play / view private bucket objects.

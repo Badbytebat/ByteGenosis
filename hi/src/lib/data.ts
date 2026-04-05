@@ -5,6 +5,9 @@ import { DEFAULT_AI_CHAT_INSTRUCTIONS } from './ai-defaults';
 export const defaultData: PortfolioData = {
   header: {
     logoText: "RM",
+    logoImageUrl: undefined,
+    logoWidthPx: undefined,
+    logoHeightPx: undefined,
   },
   hero: {
     title: "Ritesh Manandhar",

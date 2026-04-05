@@ -5,6 +5,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { CursorStyle } from '@/app/page';
 import { closestMatrixCta } from '@/lib/matrix-cursor-cta';
 
+/** Avoid removeChild errors when React portals and cursor cleanup overlap. */
+function safeDetach(el: Element) {
+  const p = el.parentNode;
+  if (!p) return;
+  try {
+    p.removeChild(el);
+  } catch {
+    try {
+      el.remove();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 type MatrixCursorProps = {
   darkMode: boolean;
   cursorText: string;
@@ -56,11 +71,11 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
 
   /* Create cursor DOM before the RAF loop runs so #main-cursor always exists on first frame. */
   useEffect(() => {
-    document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => el.remove());
+    document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => safeDetach(el));
 
     if (style === 'none') {
       return () => {
-        document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => el.remove());
+        document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => safeDetach(el));
       };
     }
 
@@ -148,7 +163,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
     }
 
     return () => {
-      document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => el.remove());
+      document.querySelectorAll('#main-cursor, .ghost-cursor, #starlight-cursor-wrap').forEach((el) => safeDetach(el));
     };
   }, [cursorStructureKey]);
 
@@ -309,7 +324,7 @@ const MatrixCursor: React.FC<MatrixCursorProps> = ({
       document.documentElement.classList.remove('custom-cursor-active');
       document
         .querySelectorAll('.matrix-cursor-particle, .ink-bloom-particle, .aurora-particle, .circuit-pulse-particle')
-        .forEach((el) => el.remove());
+        .forEach((el) => safeDetach(el));
     };
 
     return () => {
@@ -344,7 +359,7 @@ const createMatrixParticle = (x: number, y: number) => {
     particle.style.left = `${x}px`;
     particle.style.top = `${y}px`;
     document.body.appendChild(particle);
-    particle.addEventListener('animationend', () => particle.remove());
+    particle.addEventListener('animationend', () => safeDetach(particle));
 };
 
 const pastelColors = ['#f8a5c2', '#9b59b6', '#74b9ff', '#82ccdd', '#f19066'];
@@ -360,7 +375,7 @@ const createInkBloomParticle = (x: number, y: number) => {
     particle.style.left = `${x + (Math.random() - 0.5) * 20}px`;
     particle.style.top = `${y + (Math.random() - 0.5) * 20}px`;
     document.body.appendChild(particle);
-    particle.addEventListener('animationend', () => particle.remove());
+    particle.addEventListener('animationend', () => safeDetach(particle));
 };
 
 const auroraGradients = [
@@ -386,7 +401,7 @@ const createAuroraParticle = (x: number, y: number, isClicked: boolean) => {
     particle.style.left = `${x + (Math.random() - 0.5) * 30}px`;
     particle.style.top = `${y + (Math.random() - 0.5) * 30}px`;
     document.body.appendChild(particle);
-    particle.addEventListener('animationend', () => particle.remove());
+    particle.addEventListener('animationend', () => safeDetach(particle));
 };
 
 const createCircuitPulseParticle = (x: number, y: number, isClicked: boolean) => {
@@ -404,7 +419,7 @@ const createCircuitPulseParticle = (x: number, y: number, isClicked: boolean) =>
     }
 
     document.body.appendChild(particle);
-    particle.addEventListener('animationend', () => particle.remove());
+    particle.addEventListener('animationend', () => safeDetach(particle));
 }
 
 

@@ -46,7 +46,7 @@ import SiteMetadata from '@/components/site-metadata';
 import JsonLd from '@/components/json-ld';
 import FloatingChatbot from '@/components/floating-chatbot';
 import BackgroundMusicDock from '@/components/background-music-dock';
-import BackgroundMusicEditor from '@/components/background-music-editor';
+import EditToolbarPanel from '@/components/edit-toolbar-panel';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import FloatingCursorSelector from '@/components/floating-cursor-selector';
@@ -79,6 +79,7 @@ export default function HomePage() {
   const [bgMusicPlaying, setBgMusicPlaying] = React.useState(false);
   const [isAboutPhotoUploading, setIsAboutPhotoUploading] = React.useState(false);
   const [isFaviconUploading, setIsFaviconUploading] = React.useState(false);
+  const [isHeaderLogoUploading, setIsHeaderLogoUploading] = React.useState(false);
   const [cursorText, setCursorText] = React.useState('');
   const [cursorColor, setCursorColor] = React.useState(CURSOR_COLORS[0]);
   const [cursorStyle, setCursorStyle] = React.useState<CursorStyle>('matrix');
@@ -278,11 +279,17 @@ export default function HomePage() {
     });
   }, [debouncedSave]);
   
-  const handleHeaderUpdate = React.useCallback((field: keyof HeaderData, value: string) => {
-    setData(prevData => {
-        const newHeader = { ...prevData.header, [field]: value };
-        debouncedSave({ header: newHeader });
-        return { ...prevData, header: newHeader };
+  const handleHeaderUpdate = React.useCallback((field: keyof HeaderData, value: string | number | undefined) => {
+    setData((prevData) => {
+      const next: Record<string, unknown> = { ...prevData.header };
+      if (value === undefined) {
+        delete next[field];
+      } else {
+        next[field] = value;
+      }
+      const newHeader = next as HeaderData;
+      debouncedSave({ header: newHeader });
+      return { ...prevData, header: newHeader };
     });
   }, [debouncedSave]);
 
@@ -553,6 +560,45 @@ export default function HomePage() {
     }
   };
 
+  const handleHeaderLogoUpload = async (file: File) => {
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Error',
+        description: 'You must be logged in to upload a logo.',
+      });
+      return;
+    }
+    if (isHeaderLogoUploading) return;
+    const ok =
+      file.type.startsWith('image/') ||
+      /\.(ico|png|jpe?g|webp|gif|avif|svg)$/i.test(file.name);
+    if (!ok) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid file',
+        description: 'Use a PNG, JPG, WebP, GIF, SVG, or ICO image.',
+      });
+      return;
+    }
+    setIsHeaderLogoUploading(true);
+    const { id: toastId, update } = toast({ description: 'Uploading logo...' });
+    try {
+      const safeName = file.name.replace(/[^\w.\-]+/g, '_');
+      const filePath = `logos/${user.id}/${Date.now()}-${safeName}`;
+      const url = await uploadFile(file, filePath);
+      const newHeader = { ...dataRef.current.header, logoImageUrl: url };
+      await savePortfolioData({ header: newHeader });
+      setData((prev) => ({ ...prev, header: newHeader }));
+      update({ id: toastId, title: 'Success!', description: 'Header logo updated.' });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Upload failed.';
+      update({ id: toastId, variant: 'destructive', title: 'Upload Failed', description: message });
+    } finally {
+      setIsHeaderLogoUploading(false);
+    }
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSupabaseConfigured) return;
@@ -645,14 +691,14 @@ export default function HomePage() {
             key="portfolio"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.8, ease: 'easeInOut' } }}
-            className="relative flex min-h-screen flex-col"
+            className="relative flex min-h-dvh flex-col"
           >
             <PortfolioStarrySky
               darkMode={darkMode}
               fullscreen
               musicPlaying={bgMusicPlaying}
             />
-            <div className="relative z-[5] flex flex-1 flex-col">
+            <div className="relative z-[5] flex min-h-0 flex-1 flex-col">
               {editMode && user && previewAsVisitor && (
                 <div className="fixed top-16 left-0 right-0 z-[55] flex flex-wrap items-center justify-center gap-3 border-b border-accent/30 bg-background/95 px-4 py-2 text-sm backdrop-blur">
                   <span>Previewing as a visitor (editing hidden)</span>
@@ -668,24 +714,18 @@ export default function HomePage() {
                 headerData={data.header}
                 editMode={!!editChrome}
                 onUpdate={handleHeaderUpdate}
+                onLogoUpload={handleHeaderLogoUpload}
+                logoUploading={isHeaderLogoUploading}
                 showNotesNav={showNotesNav}
                 showDownloadsNav={showDownloadsNav}
                 themePalette={data.themePalette}
                 onThemePaletteChange={handleThemePaletteChange}
               />
               
-              <div className="fixed bottom-4 left-4 z-50 flex max-w-[min(100vw-2rem,22rem)] flex-col gap-2">
+              <div className="fixed bottom-4 left-4 z-50 max-w-[min(100vw-2rem,22rem)]">
                 {editMode && user ? (
-                  <>
-                    {!!editChrome && (
-                      <BackgroundMusicEditor
-                        tracks={data.backgroundMusicTracks}
-                        onTracksChange={handleBackgroundMusicTracksUpdate}
-                        onUploadFile={handleMusicFileUpload}
-                        isUploading={isMusicUploading}
-                      />
-                    )}
-                    <div className="flex flex-wrap gap-2">
+                  !!editChrome ? (
+                    <>
                       <input
                         ref={resumeToolbarInputRef}
                         type="file"
@@ -698,28 +738,6 @@ export default function HomePage() {
                           if (f) void handleResumeUpload(f);
                         }}
                       />
-                      <Button
-                        type="button"
-                        data-matrix-cta
-                        size="sm"
-                        variant="secondary"
-                        disabled={isResumeUploading}
-                        onClick={() => resumeToolbarInputRef.current?.click()}
-                      >
-                        {isResumeUploading ? 'Uploading…' : 'Upload resume (PDF)'}
-                      </Button>
-                      <Button type="button" data-matrix-cta size="sm" variant="secondary" onClick={handleExportPortfolio}>
-                        Export JSON
-                      </Button>
-                      <Button
-                        type="button"
-                        data-matrix-cta
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => importInputRef.current?.click()}
-                      >
-                        Import JSON
-                      </Button>
                       <input
                         ref={importInputRef}
                         type="file"
@@ -727,23 +745,27 @@ export default function HomePage() {
                         className="hidden"
                         onChange={handleImportPortfolio}
                       />
-                      <Button type="button" data-matrix-cta size="sm" variant="outline" onClick={handleRevertSession}>
-                        Revert session
-                      </Button>
-                    </div>
-                    <Button
-                      type="button"
-                      data-matrix-cta
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setPreviewAsVisitor((p) => !p)}
-                    >
-                      {previewAsVisitor ? "Stop preview" : "Preview as visitor"}
+                      <EditToolbarPanel
+                        showMusicEditor
+                        tracks={data.backgroundMusicTracks}
+                        onTracksChange={handleBackgroundMusicTracksUpdate}
+                        onMusicUpload={handleMusicFileUpload}
+                        musicUploading={isMusicUploading}
+                        isResumeUploading={isResumeUploading}
+                        onResumePick={() => resumeToolbarInputRef.current?.click()}
+                        onExportPortfolio={handleExportPortfolio}
+                        onImportPick={() => importInputRef.current?.click()}
+                        onRevertSession={handleRevertSession}
+                        previewAsVisitor={previewAsVisitor}
+                        onTogglePreview={() => setPreviewAsVisitor((p) => !p)}
+                        onLogout={handleLogout}
+                      />
+                    </>
+                  ) : (
+                    <Button type="button" data-matrix-cta size="sm" variant="outline" onClick={() => setPreviewAsVisitor(false)}>
+                      Exit visitor preview
                     </Button>
-                    <Button type="button" data-matrix-cta onClick={handleLogout}>
-                      Logout &amp; Exit Edit Mode
-                    </Button>
-                  </>
+                  )
                 ) : (
                   <Button type="button" data-matrix-cta onClick={handleReturnToLogin}>
                     Login to Edit
@@ -751,7 +773,7 @@ export default function HomePage() {
                 )}
               </div>
 
-              <main className="flex-1">
+              <main className="min-h-0 flex-1">
                 <HeroSection 
                     data={data.hero}
                     editMode={!!editChrome}

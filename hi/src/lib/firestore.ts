@@ -27,7 +27,10 @@ export function mergePortfolioRow(raw: Record<string, unknown> | null): Portfoli
   if (!raw || typeof raw !== "object") return defaultData;
   const d = raw as Partial<PortfolioData>;
   return {
-    header: d.header ?? defaultData.header,
+    header:
+      d.header && typeof d.header === "object"
+        ? { ...defaultData.header, ...d.header }
+        : defaultData.header,
     hero: d.hero ?? defaultData.hero,
     about: d.about ?? defaultData.about,
     experience: d.experience ?? defaultData.experience,
